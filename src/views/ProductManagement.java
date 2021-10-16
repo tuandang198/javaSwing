@@ -7,6 +7,7 @@ package views;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -22,6 +23,9 @@ import models.SanPham;
  */
 public class ProductManagement extends javax.swing.JFrame {
 
+    PreparedStatement pstm = null;
+    ResultSet rs = null;
+
     /**
      * Creates new form CategoryManagement
      */
@@ -30,8 +34,10 @@ public class ProductManagement extends javax.swing.JFrame {
         showSanPham();
         showComboData();
     }
-    public ArrayList<SanPham> productList(){
-           ArrayList<SanPham> productList = new ArrayList<>();
+
+    //get table data
+    public ArrayList<SanPham> productList() {
+        ArrayList<SanPham> productList = new ArrayList<>();
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/db_supermarket", "root", "");
@@ -39,8 +45,8 @@ public class ProductManagement extends javax.swing.JFrame {
             Statement stm = con.createStatement();
             ResultSet rs = stm.executeQuery(sql);
             SanPham sanPham;
-            while(rs.next()){
-                sanPham = new SanPham(rs.getInt("id"),rs.getString("ten"),rs.getInt("gia_tien"),rs.getInt("so_luong"),rs.getString("ten"),rs.getString("ten_nha_san_xuat"));
+            while (rs.next()) {
+                sanPham = new SanPham(rs.getInt("id"), rs.getString("ten"), rs.getInt("gia_tien"), rs.getInt("so_luong"), rs.getString("ten"), rs.getString("ten_nha_san_xuat"));
                 productList.add(sanPham);
             }
         } catch (ClassNotFoundException ex) {
@@ -50,11 +56,16 @@ public class ProductManagement extends javax.swing.JFrame {
         }
         return productList;
     }
-    public void showSanPham(){
+
+    //end get table data
+    //show table data
+    public void showSanPham() {
+
         ArrayList<SanPham> list = productList();
-        DefaultTableModel model = (DefaultTableModel)jTable_product.getModel();
+        DefaultTableModel model = (DefaultTableModel) jTable_product.getModel();
+        model.setRowCount(0);
         Object[] row = new Object[6];
-        for(int i = 0; i<list.size();i++){
+        for (int i = 0; i < list.size(); i++) {
             row[0] = list.get(i).getProductId();
             row[1] = list.get(i).getTen();
             row[2] = list.get(i).getGiaTien();
@@ -62,10 +73,13 @@ public class ProductManagement extends javax.swing.JFrame {
             row[4] = list.get(i).getTenDanhMuc();
             row[5] = list.get(i).getTenNhaSanXuat();
             model.addRow(row);
-
         }
+        model.fireTableDataChanged();
     }
-    public void showComboData(){
+
+    //end show table data
+    //show combo box
+    public void showComboData() {
         try {
             String sql = "select * from danh_muc";
             String sqlNsx = "select * from nha_san_xuat";
@@ -75,11 +89,11 @@ public class ProductManagement extends javax.swing.JFrame {
             ResultSet rsNsx = stmNsx.executeQuery(sqlNsx);
             Statement stm = con.createStatement();
             ResultSet rs = stm.executeQuery(sql);
-            while(rs.next()){
+            while (rs.next()) {
                 String tenDanhMuc = rs.getString("ten");
                 jComboBox_Category.addItem(tenDanhMuc);
             }
-            while(rsNsx.next()){
+            while (rsNsx.next()) {
                 String tenNhaSanXuat = rsNsx.getString("ten_nha_san_xuat");
                 jComboBox_Manufacturer.addItem(tenNhaSanXuat);
             }
@@ -89,8 +103,10 @@ public class ProductManagement extends javax.swing.JFrame {
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(ProductManagement.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
     }
+    //end show combo box
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -101,8 +117,6 @@ public class ProductManagement extends javax.swing.JFrame {
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        txtproductId = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
         txtName = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
@@ -119,12 +133,11 @@ public class ProductManagement extends javax.swing.JFrame {
         jLabel7 = new javax.swing.JLabel();
         jComboBox_Category = new javax.swing.JComboBox<>();
         jComboBox_Manufacturer = new javax.swing.JComboBox<>();
+        btnBack = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jLabel1.setText("Product Management");
-
-        jLabel2.setText("Product ID");
 
         jLabel3.setText("Name");
 
@@ -141,8 +154,18 @@ public class ProductManagement extends javax.swing.JFrame {
         jLabel6.setText("Category");
 
         addBtn.setText("Add");
+        addBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addBtnActionPerformed(evt);
+            }
+        });
 
         updateBtn.setText("Update");
+        updateBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                updateBtnActionPerformed(evt);
+            }
+        });
 
         deleteBtn.setText("Delete");
         deleteBtn.addActionListener(new java.awt.event.ActionListener() {
@@ -152,6 +175,11 @@ public class ProductManagement extends javax.swing.JFrame {
         });
 
         clearBtn.setText("Clear");
+        clearBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                clearBtnActionPerformed(evt);
+            }
+        });
 
         jTable_product.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -170,46 +198,60 @@ public class ProductManagement extends javax.swing.JFrame {
 
         jLabel7.setText("Manufaturer");
 
+        jComboBox_Category.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Select" }));
+
+        jComboBox_Manufacturer.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Select" }));
+
+        btnBack.setText("BACK");
+        btnBack.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBackActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(57, 57, 57)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(addBtn)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(updateBtn)
-                        .addGap(39, 39, 39)
-                        .addComponent(deleteBtn)
-                        .addGap(32, 32, 32)
-                        .addComponent(clearBtn))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel5)
-                            .addComponent(jLabel4)
-                            .addComponent(jLabel6)
-                            .addComponent(jLabel2)
-                            .addComponent(jLabel3))
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(57, 57, 57)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(29, 29, 29)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(txtQuantity, javax.swing.GroupLayout.PREFERRED_SIZE, 284, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(txtPrice, javax.swing.GroupLayout.PREFERRED_SIZE, 284, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(txtproductId, javax.swing.GroupLayout.PREFERRED_SIZE, 284, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, 284, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(addBtn)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(updateBtn)
+                                .addGap(39, 39, 39)
+                                .addComponent(deleteBtn)
+                                .addGap(32, 32, 32)
+                                .addComponent(clearBtn))
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(30, 30, 30)
-                                .addComponent(jComboBox_Category, javax.swing.GroupLayout.PREFERRED_SIZE, 283, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel5)
+                                    .addComponent(jLabel4)
+                                    .addComponent(jLabel6)
+                                    .addComponent(jLabel3))
+                                .addGap(10, 10, 10)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGap(29, 29, 29)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(txtQuantity, javax.swing.GroupLayout.PREFERRED_SIZE, 284, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(txtPrice, javax.swing.GroupLayout.PREFERRED_SIZE, 284, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, 284, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGap(30, 30, 30)
+                                        .addComponent(jComboBox_Category, javax.swing.GroupLayout.PREFERRED_SIZE, 283, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel7)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jComboBox_Manufacturer, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel7)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jComboBox_Manufacturer, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addContainerGap()
+                        .addComponent(btnBack)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 71, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 196, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -220,14 +262,13 @@ public class ProductManagement extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnBack)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(33, 33, 33)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel2)
-                            .addComponent(txtproductId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGap(60, 60, 60)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel3)
                             .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -253,9 +294,7 @@ public class ProductManagement extends javax.swing.JFrame {
                             .addComponent(updateBtn)
                             .addComponent(deleteBtn)
                             .addComponent(clearBtn)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(97, Short.MAX_VALUE))
         );
 
@@ -272,23 +311,96 @@ public class ProductManagement extends javax.swing.JFrame {
 
     private void jTable_productMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable_productMouseClicked
         // TODO add your handling code here:
-        int i = jTable_product.getSelectedRow();
-        
+        DefaultTableModel productTable = (DefaultTableModel)jTable_product.getModel();
+        int selectedRow = jTable_product.getSelectedRow();
+        txtName.setText(productTable.getValueAt(selectedRow, 2).toString());
+        txtPrice.setText(productTable.getValueAt(selectedRow, 3).toString());
+        txtQuantity.setText(productTable.getValueAt(selectedRow, 4).toString());
+//        jComboBox_Category.setSelectedIndex(productTable.getValueAt(selectedRow, 5).toString());
+//        jComboBox_Manufacturer.setSelectedItem(productTable.getValueAt(selectedRow, 6).toString());
+
     }//GEN-LAST:event_jTable_productMouseClicked
+
+    private void clearBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearBtnActionPerformed
+        // TODO add your handling code here:
+        txtName.setText("");
+        txtPrice.setText("");
+        txtQuantity.setText("");
+        jComboBox_Category.setSelectedIndex(0);
+        jComboBox_Manufacturer.setSelectedIndex(0);
+
+    }//GEN-LAST:event_clearBtnActionPerformed
+
+    private void addBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addBtnActionPerformed
+        try {
+            // TODO add your handling code here:
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/db_supermarket", "root", "");
+            String sql = "INSERT INTO `san_pham` (`id`, `ten`, `so_luong`, `gia_tien`, `nha_san_xuat_id`, `danh_muc_id`) "
+                    + "VALUES (NULL, ?, ?, ?, ?, ?);";
+            pstm = con.prepareStatement(sql);
+            pstm.setString(1, txtName.getText());
+            pstm.setString(2, txtPrice.getText());
+            pstm.setString(3, txtQuantity.getText());
+            pstm.setInt(4, jComboBox_Category.getSelectedIndex());
+            pstm.setInt(5, jComboBox_Manufacturer.getSelectedIndex());
+
+            pstm.executeUpdate();
+            showSanPham();
+
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(ProductManagement.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            Logger.getLogger(ProductManagement.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_addBtnActionPerformed
+
+    private void updateBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateBtnActionPerformed
+        // TODO add your handling code here:
+        DefaultTableModel productTable = (DefaultTableModel) jTable_product.getModel();
+        int selectedRow = jTable_product.getSelectedRow();
+        int id = Integer.parseInt(productTable.getValueAt(selectedRow, 0).toString());
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/db_supermarket", "root", "");
+            String sql = "UPDATE `san_pham` SET `ten`= ?,`so_luong`= ?,`gia_tien`= ?,`nha_san_xuat_id`= ?,`danh_muc_id`= ? WHERE `id`=?";
+            pstm = con.prepareStatement(sql);
+            pstm.setString(1, txtName.getText());
+            pstm.setString(2, txtPrice.getText());
+            pstm.setString(3, txtQuantity.getText());
+            pstm.setInt(4, jComboBox_Category.getSelectedIndex());
+            pstm.setInt(5, jComboBox_Manufacturer.getSelectedIndex());
+            pstm.setInt(6, id);
+
+            pstm.executeUpdate();
+            showSanPham();
+
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(ProductManagement.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            Logger.getLogger(ProductManagement.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_updateBtnActionPerformed
+
+    private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
+        // TODO add your handling code here:
+        dispose();
+        Home home = new Home();
+        home.show();
+    }//GEN-LAST:event_btnBackActionPerformed
 
     /**
      * @param args the command line arguments
      */
-    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addBtn;
+    private javax.swing.JButton btnBack;
     private javax.swing.JButton clearBtn;
     private javax.swing.JButton deleteBtn;
     private javax.swing.JComboBox<String> jComboBox_Category;
     private javax.swing.JComboBox<String> jComboBox_Manufacturer;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -299,7 +411,6 @@ public class ProductManagement extends javax.swing.JFrame {
     private javax.swing.JTextField txtName;
     private javax.swing.JTextField txtPrice;
     private javax.swing.JTextField txtQuantity;
-    private javax.swing.JTextField txtproductId;
     private javax.swing.JButton updateBtn;
     // End of variables declaration//GEN-END:variables
 }
