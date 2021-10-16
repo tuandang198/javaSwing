@@ -52,10 +52,25 @@ public class Home extends javax.swing.JFrame {
         btnOrderMange.setText("Order Mangement");
 
         btnCategory.setText("Category Management ");
+        btnCategory.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCategoryActionPerformed(evt);
+            }
+        });
 
         btnManufacturer.setText("Manufacturer Management ");
+        btnManufacturer.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnManufacturerActionPerformed(evt);
+            }
+        });
 
         btnLogout.setText("Logout");
+        btnLogout.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLogoutActionPerformed(evt);
+            }
+        });
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -146,6 +161,27 @@ public class Home extends javax.swing.JFrame {
         productManagement.show();
         
     }//GEN-LAST:event_btnProductManageActionPerformed
+
+    private void btnCategoryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCategoryActionPerformed
+        // TODO add your handling code here:
+        dispose();
+        CategoryManagement categoryManagement = new CategoryManagement();
+        categoryManagement.show();
+    }//GEN-LAST:event_btnCategoryActionPerformed
+
+    private void btnManufacturerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnManufacturerActionPerformed
+        // TODO add your handling code here:
+        dispose();
+        ManufacturerManagement manufacturerManagement = new ManufacturerManagement();
+        manufacturerManagement.show();
+    }//GEN-LAST:event_btnManufacturerActionPerformed
+
+    private void btnLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogoutActionPerformed
+        // TODO add your handling code here:
+        dispose();
+        Login login = new Login();
+        login.show();
+    }//GEN-LAST:event_btnLogoutActionPerformed
 
     /**
      * @param args the command line arguments
