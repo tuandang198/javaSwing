@@ -5,6 +5,7 @@
  */
 package views;
 
+import controllers.DbConnect;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -12,6 +13,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
@@ -36,23 +38,25 @@ public class ProductManagement extends javax.swing.JFrame {
     }
 
     //get table data
-    public ArrayList<SanPham> productList() {
-        ArrayList<SanPham> productList = new ArrayList<>();
+    public List<SanPham> productList() {
+        List<SanPham> productList = new ArrayList<>();
+        Connection con = DbConnect.open();
+        PreparedStatement stm = null;
+        ResultSet rs = null;
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/db_supermarket", "root", "");
+            con = DbConnect.open();
             String sql = "select b.id,b.ten,b.gia_tien,b.so_luong,a.ten,c.ten_nha_san_xuat from danh_muc as a join san_pham as b on a.id = b.danh_muc_id join nha_san_xuat as c on b.nha_san_xuat_id = c.id";
-            Statement stm = con.createStatement();
-            ResultSet rs = stm.executeQuery(sql);
+            pstm = con.prepareStatement(sql);
+            rs = pstm.executeQuery();
             SanPham sanPham;
             while (rs.next()) {
-                sanPham = new SanPham(rs.getInt("id"), rs.getString("ten"), rs.getInt("gia_tien"), rs.getInt("so_luong"), rs.getString("ten"), rs.getString("ten_nha_san_xuat"));
+                sanPham = new SanPham(rs.getInt("id"), rs.getString("ten"), rs.getInt("gia_tien"), rs.getInt("so_luong"), rs.getString("a.ten"), rs.getString("ten_nha_san_xuat"));
                 productList.add(sanPham);
             }
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(ProductManagement.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
             Logger.getLogger(ProductManagement.class.getName()).log(Level.SEVERE, null, ex);
+        }finally{
+            DbConnect.close(con, stm, rs);
         }
         return productList;
     }
@@ -61,7 +65,7 @@ public class ProductManagement extends javax.swing.JFrame {
     //show table data
     public void showSanPham() {
 
-        ArrayList<SanPham> list = productList();
+        List<SanPham> list = productList();
         DefaultTableModel model = (DefaultTableModel) jTable_product.getModel();
         model.setRowCount(0);
         Object[] row = new Object[6];
@@ -80,15 +84,17 @@ public class ProductManagement extends javax.swing.JFrame {
     //end show table data
     //show combo box
     public void showComboData() {
+        Connection con = DbConnect.open();
+        PreparedStatement stm = null;
+        ResultSet rs = null;
         try {
             String sql = "select * from danh_muc";
             String sqlNsx = "select * from nha_san_xuat";
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/db_supermarket", "root", "");
-            Statement stmNsx = con.createStatement();
+            con = DbConnect.open();
+            PreparedStatement stmNsx = con.prepareStatement(sql);
             ResultSet rsNsx = stmNsx.executeQuery(sqlNsx);
-            Statement stm = con.createStatement();
-            ResultSet rs = stm.executeQuery(sql);
+             stm = con.prepareStatement(sql);
+             rs = stm.executeQuery();
             while (rs.next()) {
                 String tenDanhMuc = rs.getString("ten");
                 jComboBox_Category.addItem(tenDanhMuc);
@@ -100,8 +106,8 @@ public class ProductManagement extends javax.swing.JFrame {
             con.close();
         } catch (SQLException ex) {
             Logger.getLogger(ProductManagement.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(ProductManagement.class.getName()).log(Level.SEVERE, null, ex);
+        }finally{
+            DbConnect.close(con, stm, rs);
         }
 
     }
@@ -311,13 +317,13 @@ public class ProductManagement extends javax.swing.JFrame {
 
     private void jTable_productMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable_productMouseClicked
         // TODO add your handling code here:
-        DefaultTableModel productTable = (DefaultTableModel)jTable_product.getModel();
+        DefaultTableModel productTable = (DefaultTableModel) jTable_product.getModel();
         int selectedRow = jTable_product.getSelectedRow();
-        txtName.setText(productTable.getValueAt(selectedRow, 2).toString());
-        txtPrice.setText(productTable.getValueAt(selectedRow, 3).toString());
-        txtQuantity.setText(productTable.getValueAt(selectedRow, 4).toString());
-//        jComboBox_Category.setSelectedIndex(productTable.getValueAt(selectedRow, 5).toString());
-//        jComboBox_Manufacturer.setSelectedItem(productTable.getValueAt(selectedRow, 6).toString());
+        txtName.setText(productTable.getValueAt(selectedRow, 1).toString());
+        txtPrice.setText(productTable.getValueAt(selectedRow, 2).toString());
+        txtQuantity.setText(productTable.getValueAt(selectedRow, 3).toString());
+        jComboBox_Category.setSelectedItem(productTable.getValueAt(selectedRow, 4).toString());
+        jComboBox_Manufacturer.setSelectedItem(productTable.getValueAt(selectedRow, 5).toString());
 
     }//GEN-LAST:event_jTable_productMouseClicked
 
@@ -363,7 +369,7 @@ public class ProductManagement extends javax.swing.JFrame {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/db_supermarket", "root", "");
-            String sql = "UPDATE `san_pham` SET `ten`= ?,`so_luong`= ?,`gia_tien`= ?,`nha_san_xuat_id`= ?,`danh_muc_id`= ? WHERE `id`=?";
+            String sql = "UPDATE `san_pham` SET `ten`= ?,`gia_tien`= ?,`so_luong`= ?,`danh_muc_id`= ?, `nha_san_xuat_id`= ? WHERE `id`=?";
             pstm = con.prepareStatement(sql);
             pstm.setString(1, txtName.getText());
             pstm.setString(2, txtPrice.getText());
@@ -373,7 +379,13 @@ public class ProductManagement extends javax.swing.JFrame {
             pstm.setInt(6, id);
 
             pstm.executeUpdate();
+
             showSanPham();
+            txtName.setText("");
+            txtPrice.setText("");
+            txtQuantity.setText("");
+            jComboBox_Category.setSelectedIndex(0);
+            jComboBox_Manufacturer.setSelectedIndex(0);
 
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(ProductManagement.class.getName()).log(Level.SEVERE, null, ex);
@@ -386,7 +398,7 @@ public class ProductManagement extends javax.swing.JFrame {
         // TODO add your handling code here:
         dispose();
         Home home = new Home();
-        home.show();
+        home.setVisible(true);
     }//GEN-LAST:event_btnBackActionPerformed
 
     /**
