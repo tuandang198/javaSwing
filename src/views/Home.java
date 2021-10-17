@@ -80,7 +80,7 @@ public class Home extends javax.swing.JFrame {
                 {null, null, null, null}
             },
             new String [] {
-                "Name", "Price", "Quantity", "Manufacturer"
+                "Name", "Price", "Quantity", "Category"
             }
         ));
         jTable1.setRowHeight(30);
@@ -158,7 +158,7 @@ public class Home extends javax.swing.JFrame {
         // TODO add your handling code here:
         dispose();
         ProductManagement productManagement = new ProductManagement();
-        productManagement.show();
+        productManagement.setVisible(true);
         
     }//GEN-LAST:event_btnProductManageActionPerformed
 
@@ -166,21 +166,21 @@ public class Home extends javax.swing.JFrame {
         // TODO add your handling code here:
         dispose();
         CategoryManagement categoryManagement = new CategoryManagement();
-        categoryManagement.show();
+        categoryManagement.setVisible(true);
     }//GEN-LAST:event_btnCategoryActionPerformed
 
     private void btnManufacturerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnManufacturerActionPerformed
         // TODO add your handling code here:
         dispose();
         ManufacturerManagement manufacturerManagement = new ManufacturerManagement();
-        manufacturerManagement.show();
+        manufacturerManagement.setVisible(true);
     }//GEN-LAST:event_btnManufacturerActionPerformed
 
     private void btnLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogoutActionPerformed
         // TODO add your handling code here:
         dispose();
         Login login = new Login();
-        login.show();
+        login.setVisible(true);
     }//GEN-LAST:event_btnLogoutActionPerformed
 
     /**

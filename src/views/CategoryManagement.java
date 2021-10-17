@@ -5,6 +5,7 @@
  */
 package views;
 
+import controllers.DbConnect;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -12,6 +13,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
@@ -36,23 +38,26 @@ public class CategoryManagement extends javax.swing.JFrame {
     }
 
     //get table data
-    public ArrayList<DanhMuc> categoryList() {
-        ArrayList<DanhMuc> categoryList = new ArrayList<>();
+    public List<DanhMuc> categoryList() {
+        List<DanhMuc> categoryList = new ArrayList<>();
+        Connection con = DbConnect.open();
+        PreparedStatement stm = null;
+        ResultSet rs = null;
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/db_supermarket", "root", "");
+            con = DbConnect.open();
+
             String sql = "select * from danh_muc";
-            Statement stm = con.createStatement();
-            ResultSet rs = stm.executeQuery(sql);
+            stm = con.prepareStatement(sql);
+            rs = stm.executeQuery();
             DanhMuc danhMuc;
             while (rs.next()) {
                 danhMuc = new DanhMuc(rs.getInt("id"), rs.getString("ten"), rs.getInt("status"));
                 categoryList.add(danhMuc);
             }
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(ProductManagement.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
             Logger.getLogger(ProductManagement.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            DbConnect.close(con, stm, rs);
         }
         return categoryList;
     }
@@ -61,7 +66,7 @@ public class CategoryManagement extends javax.swing.JFrame {
     //show table data
     public void showDanhMuc() {
 
-        ArrayList<DanhMuc> list = categoryList();
+        List<DanhMuc> list = categoryList();
         DefaultTableModel model = (DefaultTableModel) tblCategory.getModel();
         model.setRowCount(0);
         Object[] row = new Object[3];
@@ -233,10 +238,14 @@ public class CategoryManagement extends javax.swing.JFrame {
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
         // TODO add your handling code here:
+        Connection con = DbConnect.open();
+        PreparedStatement stm = null;
+        ResultSet rs = null;
         try {
+
             // TODO add your handling code here:
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/db_supermarket", "root", "");
+            con = DbConnect.open();
+
             String sql = "INSERT INTO `danh_muc` (`id`, `ten`, `status`) "
                     + "VALUES (NULL, ?, ?);";
             pstm = con.prepareStatement(sql);
@@ -247,10 +256,10 @@ public class CategoryManagement extends javax.swing.JFrame {
             pstm.executeUpdate();
             showDanhMuc();
 
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(ProductManagement.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
             Logger.getLogger(ProductManagement.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            DbConnect.close(con, stm, rs);
         }
     }//GEN-LAST:event_btnAddActionPerformed
 
@@ -259,9 +268,12 @@ public class CategoryManagement extends javax.swing.JFrame {
         DefaultTableModel categoryTable = (DefaultTableModel) tblCategory.getModel();
         int selectedRow = tblCategory.getSelectedRow();
         int id = Integer.parseInt(categoryTable.getValueAt(selectedRow, 0).toString());
+        Connection con = DbConnect.open();
+        PreparedStatement stm = null;
+        ResultSet rs = null;
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/db_supermarket", "root", "");
+            con = DbConnect.open();
+
             String sql = "UPDATE `danh_muc` SET `ten`= ?,`status`= ? WHERE `id`=?";
             pstm = con.prepareStatement(sql);
             pstm.setString(1, txtName.getText());
@@ -271,10 +283,10 @@ public class CategoryManagement extends javax.swing.JFrame {
             pstm.executeUpdate();
             showDanhMuc();
 
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(ProductManagement.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
             Logger.getLogger(ProductManagement.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            DbConnect.close(con, stm, rs);
         }
     }//GEN-LAST:event_btnUpdateActionPerformed
 
@@ -283,9 +295,12 @@ public class CategoryManagement extends javax.swing.JFrame {
         DefaultTableModel categoryTable = (DefaultTableModel) tblCategory.getModel();
         int selectedRow = tblCategory.getSelectedRow();
         int id = Integer.parseInt(categoryTable.getValueAt(selectedRow, 0).toString());
+        Connection con = DbConnect.open();
+        PreparedStatement stm = null;
+        ResultSet rs = null;
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/db_supermarket", "root", "");
+            con = DbConnect.open();
+
             String sql = "DELETE FROM `danh_muc` WHERE `id`=?";
             pstm = con.prepareStatement(sql);
 
@@ -296,10 +311,10 @@ public class CategoryManagement extends javax.swing.JFrame {
             cboStatus.setSelectedIndex(0);
             showDanhMuc();
 
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(ProductManagement.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
             Logger.getLogger(ProductManagement.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            DbConnect.close(con, stm, rs);
         }
     }//GEN-LAST:event_btnDeleteActionPerformed
 
@@ -307,7 +322,7 @@ public class CategoryManagement extends javax.swing.JFrame {
         // TODO add your handling code here:
         dispose();
         Home homePage = new Home();
-        homePage.show();
+        homePage.setVisible(true);
     }//GEN-LAST:event_btnBackActionPerformed
 
     /**

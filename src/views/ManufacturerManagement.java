@@ -5,6 +5,7 @@
  */
 package views;
 
+import controllers.DbConnect;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -12,6 +13,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
@@ -37,23 +39,25 @@ public class ManufacturerManagement extends javax.swing.JFrame {
     }
 
     //get table data
-    public ArrayList<NhaSanXuat> manufacturerList() {
-        ArrayList<NhaSanXuat> manufacturerList = new ArrayList<>();
+    public List<NhaSanXuat> manufacturerList() {
+        List<NhaSanXuat> manufacturerList = new ArrayList<>();
+        Connection con = DbConnect.open();
+        PreparedStatement stm = null;
+        ResultSet rs = null;
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/db_supermarket", "root", "");
+            con = DbConnect.open();
             String sql = "select * from nha_san_xuat";
-            Statement stm = con.createStatement();
-            ResultSet rs = stm.executeQuery(sql);
+            stm = con.prepareStatement(sql);
+            rs = stm.executeQuery(sql);
             NhaSanXuat nhaSanXuat;
             while (rs.next()) {
                 nhaSanXuat = new NhaSanXuat(rs.getInt("id"), rs.getString("ten_nha_san_xuat"), rs.getInt("status"));
                 manufacturerList.add(nhaSanXuat);
             }
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(ProductManagement.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
             Logger.getLogger(ProductManagement.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            DbConnect.close(con, stm, rs);
         }
         return manufacturerList;
     }
@@ -62,7 +66,7 @@ public class ManufacturerManagement extends javax.swing.JFrame {
     //show table data
     public void showNhaSanXuat() {
 
-        ArrayList<NhaSanXuat> list = manufacturerList();
+        List<NhaSanXuat> list = manufacturerList();
         DefaultTableModel model = (DefaultTableModel) tblCategory.getModel();
         model.setRowCount(0);
         Object[] row = new Object[3];
@@ -234,10 +238,12 @@ public class ManufacturerManagement extends javax.swing.JFrame {
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
         // TODO add your handling code here:
+        Connection con = DbConnect.open();
+        PreparedStatement stm = null;
+        ResultSet rs = null;
         try {
             // TODO add your handling code here:
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/db_supermarket", "root", "");
+            con = DbConnect.open();
             String sql = "INSERT INTO `nha_san_xuat` (`id`, `ten_nha_san_xuat`, `status`) "
                     + "VALUES (NULL, ?, ?);";
             pstm = con.prepareStatement(sql);
@@ -248,21 +254,22 @@ public class ManufacturerManagement extends javax.swing.JFrame {
             pstm.executeUpdate();
             showNhaSanXuat();
 
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(ProductManagement.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
             Logger.getLogger(ProductManagement.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            DbConnect.close(con, stm, rs);
         }
     }//GEN-LAST:event_btnAddActionPerformed
 
     private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
         // TODO add your handling code here:
+        Connection con = DbConnect.open();
+        PreparedStatement stm = null;
         DefaultTableModel categoryTable = (DefaultTableModel) tblCategory.getModel();
         int selectedRow = tblCategory.getSelectedRow();
         int id = Integer.parseInt(categoryTable.getValueAt(selectedRow, 0).toString());
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/db_supermarket", "root", "");
+            con = DbConnect.open();
             String sql = "UPDATE `nha_san_xuat` SET `ten_nha_san_xuat`= ?,`status`= ? WHERE `id`=?";
             pstm = con.prepareStatement(sql);
             pstm.setString(1, txtName.getText());
@@ -272,21 +279,22 @@ public class ManufacturerManagement extends javax.swing.JFrame {
             pstm.executeUpdate();
             showNhaSanXuat();
 
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(ProductManagement.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
             Logger.getLogger(ProductManagement.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            DbConnect.close(con, stm, rs);
         }
     }//GEN-LAST:event_btnUpdateActionPerformed
 
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
         // TODO add your handling code here:
+        Connection con = DbConnect.open();
+        PreparedStatement stm = null;
         DefaultTableModel categoryTable = (DefaultTableModel) tblCategory.getModel();
         int selectedRow = tblCategory.getSelectedRow();
         int id = Integer.parseInt(categoryTable.getValueAt(selectedRow, 0).toString());
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/db_supermarket", "root", "");
+            con = DbConnect.open();
             String sql = "DELETE FROM `nha_san_xuat` WHERE `id`=?";
             pstm = con.prepareStatement(sql);
 
@@ -297,18 +305,18 @@ public class ManufacturerManagement extends javax.swing.JFrame {
             cboStatus.setSelectedIndex(0);
             showNhaSanXuat();
 
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(ProductManagement.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
             Logger.getLogger(ProductManagement.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        } finally {
+            DbConnect.close(con, stm, rs);
+            }
     }//GEN-LAST:event_btnDeleteActionPerformed
 
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
         // TODO add your handling code here:
         dispose();
         Home homePage = new Home();
-        homePage.show();
+        homePage.setVisible(true);
     }//GEN-LAST:event_btnBackActionPerformed
 
     /**

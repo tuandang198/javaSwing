@@ -5,12 +5,11 @@
  */
 package views;
 
-import controllers.DatabaseConnection;
+import controllers.DbConnect;
 import java.sql.Connection;
-import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -28,6 +27,7 @@ public class Login extends javax.swing.JFrame {
         initComponents();
     }
     int flag = 0;
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -119,22 +119,24 @@ public class Login extends javax.swing.JFrame {
     }//GEN-LAST:event_exitbtnActionPerformed
 
     private void loginbtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginbtnActionPerformed
+        Connection con = DbConnect.open();
+        PreparedStatement stm = null;
+        ResultSet rs = null;
         try {
-
             // TODO add your handling code here:
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/db_supermarket", "root", "");
-            String password = passwordtxt.getText();
+             con = DbConnect.open();
+            String password = new String(passwordtxt.getPassword());
             String username = usernametxt.getText();
-            Statement stm = con.createStatement();
-            String sql = "select * from _user where username = '" + username + "' and password = '" + password + "'";
-            ResultSet rs = stm.executeQuery(sql);
+            String sql = "select * from _user where username =? and password =?;";
+            stm = con.prepareStatement(sql);
+            stm.setString(1, username);
+            stm.setString(2, password);
+            rs = stm.executeQuery();
             if (rs.next()) {
                 dispose();
                 Home homePage = new Home();
-                homePage.show();
-            }
-            else {
+                homePage.setVisible(true);
+            } else {
                 JOptionPane.showMessageDialog(this, "username or password is incorrect");
                 usernametxt.setText("");
                 passwordtxt.setText("");
@@ -142,8 +144,8 @@ public class Login extends javax.swing.JFrame {
             }
         } catch (SQLException ex) {
             Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+        } finally{
+            DbConnect.close(con, stm, rs);
         }
 
 
@@ -152,7 +154,6 @@ public class Login extends javax.swing.JFrame {
     /**
      * @param args the command line arguments
      */
-    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton exitbtn;
