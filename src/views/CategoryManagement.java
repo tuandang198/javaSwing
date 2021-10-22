@@ -5,6 +5,7 @@
  */
 package views;
 
+import DAO.CategoryDAO;
 import controllers.DbConnect;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -37,36 +38,10 @@ public class CategoryManagement extends javax.swing.JFrame {
         showDanhMuc();
     }
 
-    //get table data
-    public List<DanhMuc> categoryList() {
-        List<DanhMuc> categoryList = new ArrayList<>();
-        Connection con = DbConnect.open();
-        PreparedStatement stm = null;
-        ResultSet rs = null;
-        try {
-            con = DbConnect.open();
-
-            String sql = "select * from danh_muc";
-            stm = con.prepareStatement(sql);
-            rs = stm.executeQuery();
-            DanhMuc danhMuc;
-            while (rs.next()) {
-                danhMuc = new DanhMuc(rs.getInt("id"), rs.getString("ten"), rs.getInt("status"));
-                categoryList.add(danhMuc);
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(ProductManagement.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            DbConnect.close(con, stm, rs);
-        }
-        return categoryList;
-    }
-
-    //end get table data
     //show table data
     public void showDanhMuc() {
 
-        List<DanhMuc> list = categoryList();
+        List<DanhMuc> list = CategoryDAO.categoryList();
         DefaultTableModel model = (DefaultTableModel) tblCategory.getModel();
         model.setRowCount(0);
         Object[] row = new Object[3];
@@ -238,29 +213,8 @@ public class CategoryManagement extends javax.swing.JFrame {
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
         // TODO add your handling code here:
-        Connection con = DbConnect.open();
-        PreparedStatement stm = null;
-        ResultSet rs = null;
-        try {
-
-            // TODO add your handling code here:
-            con = DbConnect.open();
-
-            String sql = "INSERT INTO `danh_muc` (`id`, `ten`, `status`) "
-                    + "VALUES (NULL, ?, ?);";
-            pstm = con.prepareStatement(sql);
-            pstm.setString(1, txtName.getText());
-
-            pstm.setInt(2, cboStatus.getSelectedIndex());
-
-            pstm.executeUpdate();
-            showDanhMuc();
-
-        } catch (SQLException ex) {
-            Logger.getLogger(ProductManagement.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            DbConnect.close(con, stm, rs);
-        }
+        CategoryDAO.add(txtName.getText(), cboStatus.getSelectedIndex());
+        showDanhMuc();
     }//GEN-LAST:event_btnAddActionPerformed
 
     private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
@@ -268,26 +222,11 @@ public class CategoryManagement extends javax.swing.JFrame {
         DefaultTableModel categoryTable = (DefaultTableModel) tblCategory.getModel();
         int selectedRow = tblCategory.getSelectedRow();
         int id = Integer.parseInt(categoryTable.getValueAt(selectedRow, 0).toString());
-        Connection con = DbConnect.open();
-        PreparedStatement stm = null;
-        ResultSet rs = null;
-        try {
-            con = DbConnect.open();
+        CategoryDAO.update(txtName.getText(), cboStatus.getSelectedIndex(), id);
 
-            String sql = "UPDATE `danh_muc` SET `ten`= ?,`status`= ? WHERE `id`=?";
-            pstm = con.prepareStatement(sql);
-            pstm.setString(1, txtName.getText());
-            pstm.setInt(2, cboStatus.getSelectedIndex());
-            pstm.setInt(3, id);
+        showDanhMuc();
 
-            pstm.executeUpdate();
-            showDanhMuc();
 
-        } catch (SQLException ex) {
-            Logger.getLogger(ProductManagement.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            DbConnect.close(con, stm, rs);
-        }
     }//GEN-LAST:event_btnUpdateActionPerformed
 
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
@@ -295,27 +234,8 @@ public class CategoryManagement extends javax.swing.JFrame {
         DefaultTableModel categoryTable = (DefaultTableModel) tblCategory.getModel();
         int selectedRow = tblCategory.getSelectedRow();
         int id = Integer.parseInt(categoryTable.getValueAt(selectedRow, 0).toString());
-        Connection con = DbConnect.open();
-        PreparedStatement stm = null;
-        ResultSet rs = null;
-        try {
-            con = DbConnect.open();
-
-            String sql = "DELETE FROM `danh_muc` WHERE `id`=?";
-            pstm = con.prepareStatement(sql);
-
-            pstm.setInt(1, id);
-            pstm.executeUpdate();
-            txtName.setText("");
-
-            cboStatus.setSelectedIndex(0);
-            showDanhMuc();
-
-        } catch (SQLException ex) {
-            Logger.getLogger(ProductManagement.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            DbConnect.close(con, stm, rs);
-        }
+        CategoryDAO.delete(id);
+        showDanhMuc();
     }//GEN-LAST:event_btnDeleteActionPerformed
 
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed

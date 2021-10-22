@@ -5,6 +5,7 @@
  */
 package views;
 
+import DAO.ProductDAO;
 import controllers.DbConnect;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -46,8 +47,8 @@ public class ProductManagement extends javax.swing.JFrame {
         try {
             con = DbConnect.open();
             String sql = "select b.id,b.ten,b.gia_tien,b.so_luong,a.ten,c.ten_nha_san_xuat from danh_muc as a join san_pham as b on a.id = b.danh_muc_id join nha_san_xuat as c on b.nha_san_xuat_id = c.id";
-            pstm = con.prepareStatement(sql);
-            rs = pstm.executeQuery();
+            stm = con.prepareStatement(sql);
+            rs = stm.executeQuery();
             SanPham sanPham;
             while (rs.next()) {
                 sanPham = new SanPham(rs.getInt("id"), rs.getString("ten"), rs.getInt("gia_tien"), rs.getInt("so_luong"), rs.getString("a.ten"), rs.getString("ten_nha_san_xuat"));
@@ -55,7 +56,7 @@ public class ProductManagement extends javax.swing.JFrame {
             }
         } catch (SQLException ex) {
             Logger.getLogger(ProductManagement.class.getName()).log(Level.SEVERE, null, ex);
-        }finally{
+        } finally {
             DbConnect.close(con, stm, rs);
         }
         return productList;
@@ -93,8 +94,8 @@ public class ProductManagement extends javax.swing.JFrame {
             con = DbConnect.open();
             PreparedStatement stmNsx = con.prepareStatement(sql);
             ResultSet rsNsx = stmNsx.executeQuery(sqlNsx);
-             stm = con.prepareStatement(sql);
-             rs = stm.executeQuery();
+            stm = con.prepareStatement(sql);
+            rs = stm.executeQuery();
             while (rs.next()) {
                 String tenDanhMuc = rs.getString("ten");
                 jComboBox_Category.addItem(tenDanhMuc);
@@ -106,7 +107,7 @@ public class ProductManagement extends javax.swing.JFrame {
             con.close();
         } catch (SQLException ex) {
             Logger.getLogger(ProductManagement.class.getName()).log(Level.SEVERE, null, ex);
-        }finally{
+        } finally {
             DbConnect.close(con, stm, rs);
         }
 
@@ -309,6 +310,12 @@ public class ProductManagement extends javax.swing.JFrame {
 
     private void deleteBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteBtnActionPerformed
         // TODO add your handling code here:
+        DefaultTableModel productTable = (DefaultTableModel) jTable_product.getModel();
+        int selectedRow = jTable_product.getSelectedRow();
+        int id = Integer.parseInt(productTable.getValueAt(selectedRow, 0).toString());
+        ProductDAO.delete(id);
+        showSanPham();
+        
     }//GEN-LAST:event_deleteBtnActionPerformed
 
     private void txtPriceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPriceActionPerformed
@@ -338,27 +345,13 @@ public class ProductManagement extends javax.swing.JFrame {
     }//GEN-LAST:event_clearBtnActionPerformed
 
     private void addBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addBtnActionPerformed
-        try {
-            // TODO add your handling code here:
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/db_supermarket", "root", "");
-            String sql = "INSERT INTO `san_pham` (`id`, `ten`, `so_luong`, `gia_tien`, `nha_san_xuat_id`, `danh_muc_id`) "
-                    + "VALUES (NULL, ?, ?, ?, ?, ?);";
-            pstm = con.prepareStatement(sql);
-            pstm.setString(1, txtName.getText());
-            pstm.setString(2, txtPrice.getText());
-            pstm.setString(3, txtQuantity.getText());
-            pstm.setInt(4, jComboBox_Category.getSelectedIndex());
-            pstm.setInt(5, jComboBox_Manufacturer.getSelectedIndex());
 
-            pstm.executeUpdate();
-            showSanPham();
+        // TODO add your handling code here:
+        ProductDAO.add(txtName.getText(), txtPrice.getText(), txtQuantity.getText(), jComboBox_Category.getSelectedIndex(), jComboBox_Manufacturer.getSelectedIndex());
 
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(ProductManagement.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SQLException ex) {
-            Logger.getLogger(ProductManagement.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        showSanPham();
+
+
     }//GEN-LAST:event_addBtnActionPerformed
 
     private void updateBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateBtnActionPerformed
@@ -366,32 +359,17 @@ public class ProductManagement extends javax.swing.JFrame {
         DefaultTableModel productTable = (DefaultTableModel) jTable_product.getModel();
         int selectedRow = jTable_product.getSelectedRow();
         int id = Integer.parseInt(productTable.getValueAt(selectedRow, 0).toString());
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/db_supermarket", "root", "");
-            String sql = "UPDATE `san_pham` SET `ten`= ?,`gia_tien`= ?,`so_luong`= ?,`danh_muc_id`= ?, `nha_san_xuat_id`= ? WHERE `id`=?";
-            pstm = con.prepareStatement(sql);
-            pstm.setString(1, txtName.getText());
-            pstm.setString(2, txtPrice.getText());
-            pstm.setString(3, txtQuantity.getText());
-            pstm.setInt(4, jComboBox_Category.getSelectedIndex());
-            pstm.setInt(5, jComboBox_Manufacturer.getSelectedIndex());
-            pstm.setInt(6, id);
 
-            pstm.executeUpdate();
+        ProductDAO.update(txtName.getText(), txtPrice.getText(), txtQuantity.getText(), jComboBox_Category.getSelectedIndex(), jComboBox_Manufacturer.getSelectedIndex(), id);
 
-            showSanPham();
-            txtName.setText("");
-            txtPrice.setText("");
-            txtQuantity.setText("");
-            jComboBox_Category.setSelectedIndex(0);
-            jComboBox_Manufacturer.setSelectedIndex(0);
+        showSanPham();
+        txtName.setText("");
+        txtPrice.setText("");
+        txtQuantity.setText("");
+        jComboBox_Category.setSelectedIndex(0);
+        jComboBox_Manufacturer.setSelectedIndex(0);
 
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(ProductManagement.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SQLException ex) {
-            Logger.getLogger(ProductManagement.class.getName()).log(Level.SEVERE, null, ex);
-        }
+
     }//GEN-LAST:event_updateBtnActionPerformed
 
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed

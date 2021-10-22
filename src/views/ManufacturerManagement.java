@@ -5,6 +5,7 @@
  */
 package views;
 
+import DAO.ManufacturerDAO;
 import controllers.DbConnect;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -32,41 +33,18 @@ public class ManufacturerManagement extends javax.swing.JFrame {
      */
     PreparedStatement pstm = null;
     ResultSet rs = null;
-
+    
     public ManufacturerManagement() {
         initComponents();
         showNhaSanXuat();
     }
 
     //get table data
-    public List<NhaSanXuat> manufacturerList() {
-        List<NhaSanXuat> manufacturerList = new ArrayList<>();
-        Connection con = DbConnect.open();
-        PreparedStatement stm = null;
-        ResultSet rs = null;
-        try {
-            con = DbConnect.open();
-            String sql = "select * from nha_san_xuat";
-            stm = con.prepareStatement(sql);
-            rs = stm.executeQuery(sql);
-            NhaSanXuat nhaSanXuat;
-            while (rs.next()) {
-                nhaSanXuat = new NhaSanXuat(rs.getInt("id"), rs.getString("ten_nha_san_xuat"), rs.getInt("status"));
-                manufacturerList.add(nhaSanXuat);
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(ProductManagement.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            DbConnect.close(con, stm, rs);
-        }
-        return manufacturerList;
-    }
-
     //end get table data
     //show table data
     public void showNhaSanXuat() {
-
-        List<NhaSanXuat> list = manufacturerList();
+        
+        List<NhaSanXuat> list = ManufacturerDAO.manufacturerList();
         DefaultTableModel model = (DefaultTableModel) tblCategory.getModel();
         model.setRowCount(0);
         Object[] row = new Object[3];
@@ -78,7 +56,7 @@ public class ManufacturerManagement extends javax.swing.JFrame {
             } else {
                 row[2] = "Not Active";
             }
-
+            
             model.addRow(row);
         }
         model.fireTableDataChanged();
@@ -238,27 +216,11 @@ public class ManufacturerManagement extends javax.swing.JFrame {
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
         // TODO add your handling code here:
-        Connection con = DbConnect.open();
-        PreparedStatement stm = null;
-        ResultSet rs = null;
-        try {
-            // TODO add your handling code here:
-            con = DbConnect.open();
-            String sql = "INSERT INTO `nha_san_xuat` (`id`, `ten_nha_san_xuat`, `status`) "
-                    + "VALUES (NULL, ?, ?);";
-            pstm = con.prepareStatement(sql);
-            pstm.setString(1, txtName.getText());
 
-            pstm.setInt(2, cboStatus.getSelectedIndex());
+        ManufacturerDAO.add(txtName.getText(), cboStatus.getSelectedIndex());
+        showNhaSanXuat();
+        
 
-            pstm.executeUpdate();
-            showNhaSanXuat();
-
-        } catch (SQLException ex) {
-            Logger.getLogger(ProductManagement.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            DbConnect.close(con, stm, rs);
-        }
     }//GEN-LAST:event_btnAddActionPerformed
 
     private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
@@ -268,48 +230,24 @@ public class ManufacturerManagement extends javax.swing.JFrame {
         DefaultTableModel categoryTable = (DefaultTableModel) tblCategory.getModel();
         int selectedRow = tblCategory.getSelectedRow();
         int id = Integer.parseInt(categoryTable.getValueAt(selectedRow, 0).toString());
-        try {
-            con = DbConnect.open();
-            String sql = "UPDATE `nha_san_xuat` SET `ten_nha_san_xuat`= ?,`status`= ? WHERE `id`=?";
-            pstm = con.prepareStatement(sql);
-            pstm.setString(1, txtName.getText());
-            pstm.setInt(2, cboStatus.getSelectedIndex());
-            pstm.setInt(3, id);
+        ManufacturerDAO.update(txtName.getText(), cboStatus.getSelectedIndex(), id);
+        showNhaSanXuat();
+        
 
-            pstm.executeUpdate();
-            showNhaSanXuat();
-
-        } catch (SQLException ex) {
-            Logger.getLogger(ProductManagement.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            DbConnect.close(con, stm, rs);
-        }
     }//GEN-LAST:event_btnUpdateActionPerformed
 
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
         // TODO add your handling code here:
-        Connection con = DbConnect.open();
-        PreparedStatement stm = null;
+        
         DefaultTableModel categoryTable = (DefaultTableModel) tblCategory.getModel();
         int selectedRow = tblCategory.getSelectedRow();
         int id = Integer.parseInt(categoryTable.getValueAt(selectedRow, 0).toString());
-        try {
-            con = DbConnect.open();
-            String sql = "DELETE FROM `nha_san_xuat` WHERE `id`=?";
-            pstm = con.prepareStatement(sql);
+        ManufacturerDAO.delete(id);
+        txtName.setText("");
+        cboStatus.setSelectedIndex(0);
+        showNhaSanXuat();
+        
 
-            pstm.setInt(1, id);
-            pstm.executeUpdate();
-            txtName.setText("");
-
-            cboStatus.setSelectedIndex(0);
-            showNhaSanXuat();
-
-        } catch (SQLException ex) {
-            Logger.getLogger(ProductManagement.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            DbConnect.close(con, stm, rs);
-            }
     }//GEN-LAST:event_btnDeleteActionPerformed
 
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
