@@ -25,6 +25,14 @@ public class SanPham {
     public SanPham() {
     }
 
+    public SanPham(int giaTien, int soLuong, String ten, String tenDanhMuc, String tenNhaSanXuat) {
+        this.giaTien = giaTien;
+        this.soLuong = soLuong;
+        this.ten = ten;
+        this.tenDanhMuc = tenDanhMuc;
+        this.tenNhaSanXuat = tenNhaSanXuat;
+    }
+
     public int getProductId() {
         return productId;
     }
