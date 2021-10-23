@@ -5,7 +5,7 @@
  */
 package views;
 
-import controllers.DbConnect;
+import utils.DbConnect;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

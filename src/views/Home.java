@@ -5,19 +5,18 @@
  */
 package views;
 
-import DAO.ProductDAO;
-import controllers.DbConnect;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import dao.OrderDAO;
+import dao.ProductDAO;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Optional;
+import java.util.Vector;
 import javax.swing.table.DefaultTableModel;
 import models.Order;
 import models.SanPham;
+import utils.NumberUtils;
 
 /**
  *
@@ -30,28 +29,29 @@ public class Home extends javax.swing.JFrame {
      */
     public Home() {
         initComponents();
+        showDate();
         showSanPhamHome();
     }
     List<Order> orderList = new ArrayList<>();
-    int sum = 0;
-
-    
+    float sum = 0;
+    int sumQty = 0;
+    Date d;
+    List<SanPham> list;
 
     public void showSanPhamHome() {
         txtTotalBill.setEditable(false);
         txtName.setEditable(false);
         txtPrice.setEditable(false);
         txtCategory.setEditable(false);
-        List<SanPham> list = ProductDAO.productList();
+        list = ProductDAO.productList();
         DefaultTableModel model = (DefaultTableModel) tblHome.getModel();
         model.setRowCount(0);
         Object[] row = new Object[4];
         for (int i = 0; i < list.size(); i++) {
             row[0] = list.get(i).getTen();
-            row[1] = list.get(i).getGiaTien();
+            row[1] = NumberUtils.formatNumber(list.get(i).getGiaTien());
             row[2] = list.get(i).getSoLuong();
             row[3] = list.get(i).getTenDanhMuc();
-
             model.addRow(row);
         }
         model.fireTableDataChanged();
@@ -66,21 +66,19 @@ public class Home extends javax.swing.JFrame {
 
     public void showOrderList() {
 
-        List<Order> list = orderList();
-        DefaultTableModel model = (DefaultTableModel) tblOrder.getModel();
-        model.setRowCount(0);
-        Object[] row = new Object[4];
-        for (int i = 0; i < list.size(); i++) {
-            row[0] = list.get(i).getName();
-            row[1] = list.get(i).getPrice();
-            row[2] = list.get(i).getQuantity();
-            row[3] = list.get(i).getPrice() * list.get(i).getQuantity();
-            sum += list.get(i).getPrice() * list.get(i).getQuantity();
+    }
 
-            model.addRow(row);
+    public void showDate() {
+        d = new Date();
+        SimpleDateFormat s = new SimpleDateFormat("yyyy-MM-dd");
+        lbdate.setText(s.format(d));
+    }
+
+    public void addOrderList() {
+        List<Order> list = orderList();
+        for (int i = 0; i < list.size(); i++) {
+            OrderDAO.addOrderList(ERROR, list.get(i).getName(), list.get(i).getQuantity(), list.get(i).getPrice() * list.get(i).getQuantity());
         }
-        model.fireTableDataChanged();
-        txtTotalBill.setText(String.valueOf(sum));
     }
 
     /**
@@ -117,6 +115,8 @@ public class Home extends javax.swing.JFrame {
         tblOrder = new javax.swing.JTable();
         jLabel5 = new javax.swing.JLabel();
         txtTotalBill = new javax.swing.JTextField();
+        jLabel6 = new javax.swing.JLabel();
+        lbdate = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMaximumSize(new java.awt.Dimension(200, 100));
@@ -170,10 +170,21 @@ public class Home extends javax.swing.JFrame {
         btnSearch.setText("Search");
 
         btnOrder.setText("Order");
+        btnOrder.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnOrderActionPerformed(evt);
+            }
+        });
 
         jLabel1.setText("Name");
 
         jLabel2.setText("Price");
+
+        txtPrice.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtPriceActionPerformed(evt);
+            }
+        });
 
         jLabel3.setText("Quantity");
 
@@ -225,6 +236,10 @@ public class Home extends javax.swing.JFrame {
             }
         });
 
+        jLabel6.setText("Date:");
+
+        lbdate.setText("datetime");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -232,6 +247,18 @@ public class Home extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 804, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 74, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel5)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(txtTotalBill, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(btnOrder, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 491, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(37, 37, 37))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(btnProductManage)
                         .addGap(18, 18, 18)
@@ -264,26 +291,20 @@ public class Home extends javax.swing.JFrame {
                                         .addGap(32, 32, 32)
                                         .addComponent(btnDelete)
                                         .addGap(32, 32, 32)
-                                        .addComponent(btnReset))))
+                                        .addComponent(btnReset)))
+                                .addGap(0, 0, Short.MAX_VALUE))
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(36, 36, 36)
                                 .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 209, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
                                 .addComponent(btnSearch)
-                                .addGap(108, 108, 108)
-                                .addComponent(btnLogout))))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 804, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel5)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(txtTotalBill, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(99, 99, 99)
-                                .addComponent(btnOrder, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 491, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addComponent(jLabel6)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(lbdate, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(btnLogout)))
+                        .addContainerGap())))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -291,13 +312,16 @@ public class Home extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jTextField1)
-                    .addComponent(btnSearch)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(btnSearch)
+                        .addComponent(btnLogout)
+                        .addComponent(jLabel6)
+                        .addComponent(lbdate))
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(btnProductManage)
                         .addComponent(btnOrderMange)
                         .addComponent(btnCategory)
-                        .addComponent(btnManufacturer)
-                        .addComponent(btnLogout)))
+                        .addComponent(btnManufacturer)))
                 .addGap(33, 33, 33)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 503, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -342,7 +366,7 @@ public class Home extends javax.swing.JFrame {
         productManagement.setVisible(true);
 
     }//GEN-LAST:event_btnProductManageActionPerformed
-    
+
     private void btnCategoryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCategoryActionPerformed
         // TODO add your handling code here:
         dispose();
@@ -367,13 +391,24 @@ public class Home extends javax.swing.JFrame {
     private void txtQuantityActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtQuantityActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtQuantityActionPerformed
+    SanPham selectedSp;
 
     private void tblHomeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblHomeMouseClicked
         // TODO add your handling code here:
+
         DefaultTableModel productTable = (DefaultTableModel) tblHome.getModel();
         int selectedRow = tblHome.getSelectedRow();
-        
-        
+        selectedSp = list.get(selectedRow);
+//        Optional<SanPham> op = order.stream().filter(a -> a.getProductId() == selectedSp.getProductId()).findAny();
+//        if (op.isPresent()) {
+//            SanPham sp = op.get();
+//            sp.setSoLuong(sp.getSoLuong()+1);
+//        } else {
+//            selectedSp.setSoLuong(1);
+//            order.add(selectedSp);
+//        }
+//        System.out.println(selectedSp.getGiaTien());
+
         txtName.setText(productTable.getValueAt(selectedRow, 0).toString());
         txtPrice.setText(productTable.getValueAt(selectedRow, 1).toString());
         txtQuantity.setText("1");
@@ -383,11 +418,32 @@ public class Home extends javax.swing.JFrame {
     private void tblOrderMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblOrderMouseClicked
         // TODO add your handling code here:
     }//GEN-LAST:event_tblOrderMouseClicked
-
+    List<SanPham> order = new ArrayList<>();
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
         // TODO add your handling code here:
-        showOrderList();
-        
+        int soLuong = Integer.parseInt(txtQuantity.getText());
+        Optional<SanPham> op = order.stream().filter(a -> a.getProductId() == selectedSp.getProductId()).findAny();
+        if (op.isPresent()) {
+            SanPham sp = op.get();
+            sp.setSoLuong(sp.getSoLuong() + soLuong);
+        } else {
+            selectedSp.setSoLuong(soLuong);
+            order.add(selectedSp);
+        }
+
+        sum = order.stream().map(a -> a.getGiaTien() * a.getSoLuong()).reduce((a, b) -> (a + b)).get();
+        sumQty = order.stream().map(a -> a.getSoLuong()).reduce((a, b) -> (a + b)).get();
+        txtTotalBill.setText(NumberUtils.formatNumber(sum));
+        DefaultTableModel model = (DefaultTableModel) tblOrder.getModel();
+        model.setRowCount(0);
+        for (SanPham sp : order) {
+            Vector r = new Vector();
+            r.add(sp.getTen());
+            r.add(NumberUtils.formatNumber(sp.getGiaTien()));
+            r.add(sp.getSoLuong());
+            r.add(NumberUtils.formatNumber(sp.getGiaTien() * sp.getSoLuong()));
+            model.addRow(r);
+        }
 
 
     }//GEN-LAST:event_btnAddActionPerformed
@@ -400,6 +456,17 @@ public class Home extends javax.swing.JFrame {
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_btnDeleteActionPerformed
+
+    private void btnOrderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOrderActionPerformed
+        // TODO add your handling code here:
+        java.sql.Date sqlDate = new java.sql.Date(d.getTime());
+        OrderDAO.addOrder(sum, sumQty, sqlDate);
+        addOrderList();
+    }//GEN-LAST:event_btnOrderActionPerformed
+
+    private void txtPriceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPriceActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtPriceActionPerformed
 
     /**
      * @param args the command line arguments
@@ -421,9 +488,11 @@ public class Home extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTextField jTextField1;
+    private javax.swing.JLabel lbdate;
     private javax.swing.JTable tblHome;
     private javax.swing.JTable tblOrder;
     private javax.swing.JTextField txtCategory;
