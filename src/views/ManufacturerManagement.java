@@ -5,8 +5,8 @@
  */
 package views;
 
-import DAO.ManufacturerDAO;
-import controllers.DbConnect;
+import dao.ManufacturerDAO;
+import utils.DbConnect;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
