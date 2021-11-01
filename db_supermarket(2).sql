@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Oct 26, 2021 at 09:29 AM
+-- Generation Time: Nov 01, 2021 at 04:32 PM
 -- Server version: 10.4.18-MariaDB
 -- PHP Version: 8.0.5
 
@@ -62,7 +62,8 @@ INSERT INTO `nha_san_xuat` (`id`, `ten_nha_san_xuat`, `status`) VALUES
 (1, 'Ba dinh', 2),
 (2, 'Hai Ba Trung', 1),
 (4, 'adsdsa', 1),
-(5, 'Ba dinh', 2);
+(5, 'Ba dinh', 2),
+(6, '', 0);
 
 -- --------------------------------------------------------
 
@@ -90,7 +91,7 @@ INSERT INTO `san_pham` (`id`, `ten`, `so_luong`, `gia_tien`, `nha_san_xuat_id`, 
 (6, 'asd', 12, 12345, 1, 1),
 (7, 'asdfds', 12, 123456, 1, 2),
 (8, '321', 12, 12345, 1, 1),
-(9, 'weqweq', 1231, 12, 1, 2);
+(10, 'asd', 20000, 123, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -129,12 +130,10 @@ CREATE TABLE `_order` (
 --
 
 INSERT INTO `_order` (`id`, `tong_gia_tien`, `tong_so_luong`, `ngay_mua`) VALUES
-(1, 100008, 1, '2021-10-23'),
-(2, 212361, 3, '2021-10-23'),
-(3, 448170, 6, '2021-10-23'),
-(4, 20000, 1, '2021-10-23'),
-(5, 60000, 3, '2021-10-23'),
-(6, 140008, 3, '2021-10-23');
+(34, 60000, 3, '2021-11-01'),
+(35, 180008, 5, '2021-11-01'),
+(36, 220016, 3, '2021-11-01'),
+(37, 44690, 3, '2021-11-01');
 
 -- --------------------------------------------------------
 
@@ -149,6 +148,21 @@ CREATE TABLE `_order_details` (
   `gia_tien` float NOT NULL,
   `so_luong` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `_order_details`
+--
+
+INSERT INTO `_order_details` (`id`, `order_id`, `ten`, `gia_tien`, `so_luong`) VALUES
+(23, 34, 'Bim Bimm', 20000, 3),
+(24, 35, 'Bim Bimm', 20000, 3),
+(25, 35, 'cocao', 100008, 1),
+(26, 35, 'biafd', 20000, 1),
+(27, 36, 'Bim Bimm', 20000, 1),
+(28, 36, 'cocao', 100008, 2),
+(29, 37, 'biafd', 20000, 1),
+(30, 37, 'asd', 12345, 1),
+(31, 37, '321', 12345, 1);
 
 -- --------------------------------------------------------
 
@@ -238,13 +252,13 @@ ALTER TABLE `danh_muc`
 -- AUTO_INCREMENT for table `nha_san_xuat`
 --
 ALTER TABLE `nha_san_xuat`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `san_pham`
 --
 ALTER TABLE `san_pham`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `_admin`
@@ -256,13 +270,13 @@ ALTER TABLE `_admin`
 -- AUTO_INCREMENT for table `_order`
 --
 ALTER TABLE `_order`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
 
 --
 -- AUTO_INCREMENT for table `_order_details`
 --
 ALTER TABLE `_order_details`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
 
 --
 -- AUTO_INCREMENT for table `_user`

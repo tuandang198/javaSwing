@@ -34,6 +34,9 @@ public class Home extends javax.swing.JFrame {
         initComponents();
         showDate();
         showSanPhamHome();
+        btnAdd.setEnabled(false);
+        btnDelete.setEnabled(false);
+        btnReset.setEnabled(false);
     }
     List<Order> orderList = new ArrayList<>();
     float sum = 0;
@@ -62,16 +65,7 @@ public class Home extends javax.swing.JFrame {
         model.fireTableDataChanged();
     }
 
-//    public List orderList() {
-//        DefaultTableModel orderTable = (DefaultTableModel) tblOrder.getModel();
-//        int selectedRow = tblHome.getSelectedRow();
-//        Order order = new Order(txtName.getText(), Float.parseFloat(txtPrice.getText().replaceAll(",", "")), Integer.parseInt(txtQuantity.getText()));
-//        orderList.add(order);
-//        return orderList;
-//
-//    }
 
-    
 
     public void showDate() {
         d = new Date();
@@ -80,10 +74,6 @@ public class Home extends javax.swing.JFrame {
     }
 
     public void addOrderList(int newOrderId) {
-        
-        for(SanPham o : order){
-            System.out.println(o);
-        }
         for (int i = 0; i < order.size(); i++) {
             OrderDAO.addOrderList(newOrderId, order.get(i).getTen(), order.get(i).getGiaTien(), order.get(i).getSoLuong());
         }
@@ -422,20 +412,12 @@ public class Home extends javax.swing.JFrame {
 
     private void tblHomeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblHomeMouseClicked
         // TODO add your handling code here:
-
+        btnAdd.setEnabled(true);
+        btnDelete.setEnabled(false);
+        btnReset.setEnabled(false);
         DefaultTableModel productTable = (DefaultTableModel) tblHome.getModel();
         int selectedRow = tblHome.getSelectedRow();
         selectedSp = list.get(selectedRow);
-//        Optional<SanPham> op = order.stream().filter(a -> a.getProductId() == selectedSp.getProductId()).findAny();
-//        if (op.isPresent()) {
-//            SanPham sp = op.get();
-//            sp.setSoLuong(sp.getSoLuong()+1);
-//        } else {
-//            selectedSp.setSoLuong(1);
-//            order.add(selectedSp);
-//        }
-//        System.out.println(selectedSp.getGiaTien());
-
         txtName.setText(productTable.getValueAt(selectedRow, 0).toString());
         txtPrice.setText(productTable.getValueAt(selectedRow, 1).toString());
         txtQuantity.setText("1");
@@ -444,6 +426,9 @@ public class Home extends javax.swing.JFrame {
 
     private void tblOrderMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblOrderMouseClicked
         // TODO add your handling code here:
+        btnAdd.setEnabled(false);
+        btnDelete.setEnabled(true);
+        btnReset.setEnabled(true);
     }//GEN-LAST:event_tblOrderMouseClicked
     List<SanPham> order = new ArrayList<>();
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
@@ -483,7 +468,6 @@ public class Home extends javax.swing.JFrame {
         // TODO add your handling code here:
         DefaultTableModel productTable = (DefaultTableModel) tblOrder.getModel();
         int selectedRow = tblOrder.getSelectedRow();
-        System.out.println(selectedRow);
         order.remove(selectedRow);
         productTable.removeRow(selectedRow);
     }//GEN-LAST:event_btnDeleteActionPerformed
@@ -492,9 +476,17 @@ public class Home extends javax.swing.JFrame {
         // TODO add your handling code here:
         java.sql.Date sqlDate = new java.sql.Date(d.getTime());
         int newOrderId= OrderDAO.addOrder(sum, sumQty, sqlDate);
-        
         addOrderList(newOrderId);
         
+        txtTotalBill.setText("");
+        txtName.setText("");
+        txtPrice.setText("");
+        txtCategory.setText("");
+        txtQuantity.setText("");
+
+        order.removeAll(list);
+        DefaultTableModel model = (DefaultTableModel) tblOrder.getModel();
+        model.setRowCount(0);
     }//GEN-LAST:event_btnOrderActionPerformed
 
     private void txtPriceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPriceActionPerformed
@@ -523,6 +515,7 @@ public class Home extends javax.swing.JFrame {
         txtName.setText("");
         txtPrice.setText("");
         txtCategory.setText("");
+        txtQuantity.setText("");
         order.removeAll(list);
         DefaultTableModel model = (DefaultTableModel) tblOrder.getModel();
         model.setRowCount(0);
