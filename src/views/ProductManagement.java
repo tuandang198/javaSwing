@@ -36,6 +36,9 @@ public class ProductManagement extends javax.swing.JFrame {
         initComponents();
         showSanPham();
         showComboData();
+        updateBtn.setEnabled(false);
+        clearBtn.setEnabled(false);
+        deleteBtn.setEnabled(false);
     }
 
     //get table data
@@ -310,6 +313,7 @@ public class ProductManagement extends javax.swing.JFrame {
 
     private void deleteBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteBtnActionPerformed
         // TODO add your handling code here:
+        clearBtn.setEnabled(false);
         DefaultTableModel productTable = (DefaultTableModel) jTable_product.getModel();
         int selectedRow = jTable_product.getSelectedRow();
         int id = Integer.parseInt(productTable.getValueAt(selectedRow, 0).toString());
@@ -326,6 +330,10 @@ public class ProductManagement extends javax.swing.JFrame {
         // TODO add your handling code here:
         DefaultTableModel productTable = (DefaultTableModel) jTable_product.getModel();
         int selectedRow = jTable_product.getSelectedRow();
+        addBtn.setEnabled(false);
+        updateBtn.setEnabled(true);
+        clearBtn.setEnabled(true);
+        deleteBtn.setEnabled(true);
         txtName.setText(productTable.getValueAt(selectedRow, 1).toString());
         txtPrice.setText(productTable.getValueAt(selectedRow, 2).toString());
         txtQuantity.setText(productTable.getValueAt(selectedRow, 3).toString());
@@ -341,12 +349,19 @@ public class ProductManagement extends javax.swing.JFrame {
         txtQuantity.setText("");
         jComboBox_Category.setSelectedIndex(0);
         jComboBox_Manufacturer.setSelectedIndex(0);
+        updateBtn.setEnabled(false);
+        clearBtn.setEnabled(false);
+        deleteBtn.setEnabled(false);
+                addBtn.setEnabled(true);
+
+
 
     }//GEN-LAST:event_clearBtnActionPerformed
 
     private void addBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addBtnActionPerformed
 
         // TODO add your handling code here:
+        
         ProductDAO.add(txtName.getText(), txtPrice.getText(), txtQuantity.getText(), jComboBox_Category.getSelectedIndex(), jComboBox_Manufacturer.getSelectedIndex());
 
         showSanPham();

@@ -80,4 +80,10 @@ public class SanPham {
     public void setTenNhaSanXuat(String tenNhaSanXuat) {
         this.tenNhaSanXuat = tenNhaSanXuat;
     }
+
+    @Override
+    public String toString() {
+        return "SanPham{" + "productId=" + productId + ", giaTien=" + giaTien + ", soLuong=" + soLuong + ", ten=" + ten + ", tenDanhMuc=" + tenDanhMuc + ", tenNhaSanXuat=" + tenNhaSanXuat + '}';
+    }
+    
 }
