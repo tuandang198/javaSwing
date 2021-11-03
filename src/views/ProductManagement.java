@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import models.SanPham;
 
@@ -159,8 +160,19 @@ public class ProductManagement extends javax.swing.JFrame {
                 txtPriceActionPerformed(evt);
             }
         });
+        txtPrice.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtPriceKeyPressed(evt);
+            }
+        });
 
         jLabel5.setText("Quantity");
+
+        txtQuantity.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtQuantityKeyPressed(evt);
+            }
+        });
 
         jLabel6.setText("Category");
 
@@ -318,7 +330,7 @@ public class ProductManagement extends javax.swing.JFrame {
         int id = Integer.parseInt(productTable.getValueAt(selectedRow, 0).toString());
         ProductDAO.delete(id);
         showSanPham();
-        
+
     }//GEN-LAST:event_deleteBtnActionPerformed
 
     private void txtPriceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPriceActionPerformed
@@ -351,8 +363,7 @@ public class ProductManagement extends javax.swing.JFrame {
         updateBtn.setEnabled(false);
         clearBtn.setEnabled(false);
         deleteBtn.setEnabled(false);
-                addBtn.setEnabled(true);
-
+        addBtn.setEnabled(true);
 
 
     }//GEN-LAST:event_clearBtnActionPerformed
@@ -360,10 +371,13 @@ public class ProductManagement extends javax.swing.JFrame {
     private void addBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addBtnActionPerformed
 
         // TODO add your handling code here:
-        
-        ProductDAO.add(txtName.getText(), txtPrice.getText(), txtQuantity.getText(), jComboBox_Category.getSelectedIndex(), jComboBox_Manufacturer.getSelectedIndex());
+        if (txtName.getText().trim().isEmpty() || txtPrice.getText().trim().isEmpty() || txtQuantity.getText().trim().isEmpty() || jComboBox_Category.getSelectedIndex() == 0 || jComboBox_Manufacturer.getSelectedIndex() == 0) {
+            JOptionPane.showMessageDialog(null, "Please fill all blank space!");
+        } else {
+            ProductDAO.add(txtName.getText(), txtPrice.getText(), txtQuantity.getText(), jComboBox_Category.getSelectedIndex(), jComboBox_Manufacturer.getSelectedIndex());
 
-        showSanPham();
+            showSanPham();
+        }
 
 
     }//GEN-LAST:event_addBtnActionPerformed
@@ -373,16 +387,18 @@ public class ProductManagement extends javax.swing.JFrame {
         DefaultTableModel productTable = (DefaultTableModel) jTable_product.getModel();
         int selectedRow = jTable_product.getSelectedRow();
         int id = Integer.parseInt(productTable.getValueAt(selectedRow, 0).toString());
+        if (txtName.getText().trim().isEmpty() || txtPrice.getText().trim().isEmpty() || txtQuantity.getText().trim().isEmpty() || jComboBox_Category.getSelectedIndex() == 0 || jComboBox_Manufacturer.getSelectedIndex() == 0) {
+            JOptionPane.showMessageDialog(null, "Please fill all blank space!");
+        } else {
+            ProductDAO.update(txtName.getText(), txtPrice.getText(), txtQuantity.getText(), jComboBox_Category.getSelectedIndex(), jComboBox_Manufacturer.getSelectedIndex(), id);
 
-        ProductDAO.update(txtName.getText(), txtPrice.getText(), txtQuantity.getText(), jComboBox_Category.getSelectedIndex(), jComboBox_Manufacturer.getSelectedIndex(), id);
-
-        showSanPham();
-        txtName.setText("");
-        txtPrice.setText("");
-        txtQuantity.setText("");
-        jComboBox_Category.setSelectedIndex(0);
-        jComboBox_Manufacturer.setSelectedIndex(0);
-
+            showSanPham();
+            txtName.setText("");
+            txtPrice.setText("");
+            txtQuantity.setText("");
+            jComboBox_Category.setSelectedIndex(0);
+            jComboBox_Manufacturer.setSelectedIndex(0);
+        }
 
     }//GEN-LAST:event_updateBtnActionPerformed
 
@@ -392,6 +408,31 @@ public class ProductManagement extends javax.swing.JFrame {
         Home home = new Home();
         home.setVisible(true);
     }//GEN-LAST:event_btnBackActionPerformed
+
+    private void txtPriceKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtPriceKeyPressed
+        // TODO add your handling code here:
+        char c = evt.getKeyChar();
+        if(Character.isLetter(c)){
+            
+            JOptionPane.showMessageDialog(null, "Incorrect type of value!");
+            txtPrice.setText("");
+        }else{
+            txtPrice.setEditable(true);
+
+        }
+    }//GEN-LAST:event_txtPriceKeyPressed
+
+    private void txtQuantityKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtQuantityKeyPressed
+        // TODO add your handling code here:
+        char c = evt.getKeyChar();
+        if(Character.isLetter(c)){
+            JOptionPane.showMessageDialog(null, "Incorrect type of value!");
+            txtQuantity.setText("");
+        }else{
+            txtQuantity.setEditable(true);
+
+        }
+    }//GEN-LAST:event_txtQuantityKeyPressed
 
     /**
      * @param args the command line arguments

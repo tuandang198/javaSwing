@@ -50,11 +50,11 @@ public class Home extends javax.swing.JFrame {
         txtPrice.setEditable(false);
         txtCategory.setEditable(false);
         list = ProductDAO.productList();
-        
+
         DefaultTableModel model = (DefaultTableModel) tblHome.getModel();
         model.setRowCount(0);
         Object[] row = new Object[4];
-        
+
         for (int i = 0; i < list.size(); i++) {
             row[0] = list.get(i).getTen();
             row[1] = NumberUtils.formatNumber(list.get(i).getGiaTien());
@@ -64,8 +64,6 @@ public class Home extends javax.swing.JFrame {
         }
         model.fireTableDataChanged();
     }
-
-
 
     public void showDate() {
         d = new Date();
@@ -78,7 +76,6 @@ public class Home extends javax.swing.JFrame {
             OrderDAO.addOrderList(newOrderId, order.get(i).getTen(), order.get(i).getGiaTien(), order.get(i).getSoLuong());
         }
     }
-    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -201,6 +198,11 @@ public class Home extends javax.swing.JFrame {
         txtQuantity.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtQuantityActionPerformed(evt);
+            }
+        });
+        txtQuantity.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtQuantityKeyPressed(evt);
             }
         });
 
@@ -456,7 +458,7 @@ public class Home extends javax.swing.JFrame {
             r.add(NumberUtils.formatNumber(sp.getGiaTien() * sp.getSoLuong()));
             model.addRow(r);
         }
-        
+
     }//GEN-LAST:event_btnAddActionPerformed
 
     private void txtTotalBillActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtTotalBillActionPerformed
@@ -475,9 +477,9 @@ public class Home extends javax.swing.JFrame {
     private void btnOrderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOrderActionPerformed
         // TODO add your handling code here:
         java.sql.Date sqlDate = new java.sql.Date(d.getTime());
-        int newOrderId= OrderDAO.addOrder(sum, sumQty, sqlDate);
+        int newOrderId = OrderDAO.addOrder(sum, sumQty, sqlDate);
         addOrderList(newOrderId);
-        
+
         txtTotalBill.setText("");
         txtName.setText("");
         txtPrice.setText("");
@@ -502,7 +504,7 @@ public class Home extends javax.swing.JFrame {
 
     private void txtSearchKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtSearchKeyReleased
         // TODO add your handling code here:
-        DefaultTableModel table = (DefaultTableModel)tblHome.getModel();
+        DefaultTableModel table = (DefaultTableModel) tblHome.getModel();
         String search = txtSearch.getText().toLowerCase();
         TableRowSorter<DefaultTableModel> tr = new TableRowSorter<DefaultTableModel>(table);
         tblHome.setRowSorter(tr);
@@ -520,6 +522,22 @@ public class Home extends javax.swing.JFrame {
         DefaultTableModel model = (DefaultTableModel) tblOrder.getModel();
         model.setRowCount(0);
     }//GEN-LAST:event_btnResetMouseClicked
+
+    private void txtQuantityKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtQuantityKeyPressed
+        // TODO add your handling code here:
+        char c = evt.getKeyChar();
+        if (Character.isLetter(c)) {
+            JOptionPane.showMessageDialog(null, "Incorrect type of value!");
+            txtTotalBill.setText("");
+            txtName.setText("");
+            txtPrice.setText("");
+            txtCategory.setText("");
+            txtQuantity.setText("");
+        } else {
+            txtQuantity.setEditable(true);
+
+        }
+    }//GEN-LAST:event_txtQuantityKeyPressed
 
     /**
      * @param args the command line arguments
