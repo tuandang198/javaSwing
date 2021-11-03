@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import models.DanhMuc;
 import models.SanPham;
@@ -36,6 +37,11 @@ public class CategoryManagement extends javax.swing.JFrame {
     public CategoryManagement() {
         initComponents();
         showDanhMuc();
+        btnAdd.setEnabled(true);
+        btnDelete.setEnabled(false);
+        btnUpdate.setEnabled(false);
+        btnClear.setEnabled(false);
+        
     }
 
     //show table data
@@ -82,6 +88,7 @@ public class CategoryManagement extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         cboStatus = new javax.swing.JComboBox<>();
         btnBack = new javax.swing.JButton();
+        btnClear = new javax.swing.JButton();
 
         jToggleButton1.setText("jToggleButton1");
 
@@ -142,6 +149,13 @@ public class CategoryManagement extends javax.swing.JFrame {
             }
         });
 
+        btnClear.setText("Clear");
+        btnClear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnClearActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -153,29 +167,28 @@ public class CategoryManagement extends javax.swing.JFrame {
                         .addComponent(jScrollPane1)
                         .addContainerGap())
                     .addGroup(layout.createSequentialGroup()
+                        .addComponent(btnBack)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(68, 68, 68)
                                 .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(62, 62, 62)
+                                .addGap(18, 18, 18)
                                 .addComponent(btnUpdate)
-                                .addGap(65, 65, 65)
-                                .addComponent(btnDelete))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(btnBack)
+                                .addGap(18, 18, 18)
+                                .addComponent(btnClear)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                        .addComponent(jLabel3)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(cboStatus, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jLabel1)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, 296, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(33, 33, 33)))))
+                                .addComponent(btnDelete))
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                .addComponent(jLabel3)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(cboStatus, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, 296, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(33, 33, 33)))
                         .addGap(0, 0, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
@@ -193,11 +206,12 @@ public class CategoryManagement extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
                     .addComponent(cboStatus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 44, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnAdd)
                     .addComponent(btnUpdate)
-                    .addComponent(btnDelete))
+                    .addComponent(btnDelete)
+                    .addComponent(btnClear))
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 263, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -208,6 +222,11 @@ public class CategoryManagement extends javax.swing.JFrame {
 
     private void tblCategoryMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblCategoryMouseClicked
         // TODO add your handling code here:
+        btnAdd.setEnabled(false);
+        btnDelete.setEnabled(true);
+        btnUpdate.setEnabled(true);
+        btnClear.setEnabled(true);
+        
         DefaultTableModel categoryTable = (DefaultTableModel) tblCategory.getModel();
         int selectedRow = tblCategory.getSelectedRow();
         txtName.setText(categoryTable.getValueAt(selectedRow, 1).toString());
@@ -216,8 +235,12 @@ public class CategoryManagement extends javax.swing.JFrame {
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
         // TODO add your handling code here:
+        if(txtName.getText().trim().isEmpty()){
+            JOptionPane.showMessageDialog(null, "Please fill all blank space!");
+        }else{
         CategoryDAO.add(txtName.getText(), cboStatus.getSelectedIndex());
         showDanhMuc();
+        }
     }//GEN-LAST:event_btnAddActionPerformed
 
     private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
@@ -225,9 +248,12 @@ public class CategoryManagement extends javax.swing.JFrame {
         DefaultTableModel categoryTable = (DefaultTableModel) tblCategory.getModel();
         int selectedRow = tblCategory.getSelectedRow();
         int id = Integer.parseInt(categoryTable.getValueAt(selectedRow, 0).toString());
+        if(txtName.getText().trim().isEmpty()){
+            JOptionPane.showMessageDialog(null, "Please fill all blank space!");
+        }else{
         CategoryDAO.update(txtName.getText(), cboStatus.getSelectedIndex(), id);
-
         showDanhMuc();
+        }
 
 
     }//GEN-LAST:event_btnUpdateActionPerformed
@@ -238,6 +264,8 @@ public class CategoryManagement extends javax.swing.JFrame {
         int selectedRow = tblCategory.getSelectedRow();
         int id = Integer.parseInt(categoryTable.getValueAt(selectedRow, 0).toString());
         CategoryDAO.delete(id);
+        txtName.setText("");
+        cboStatus.setSelectedIndex(0);
         showDanhMuc();
     }//GEN-LAST:event_btnDeleteActionPerformed
 
@@ -247,6 +275,16 @@ public class CategoryManagement extends javax.swing.JFrame {
         Home homePage = new Home();
         homePage.setVisible(true);
     }//GEN-LAST:event_btnBackActionPerformed
+
+    private void btnClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearActionPerformed
+        // TODO add your handling code here:
+        btnAdd.setEnabled(true);
+        btnDelete.setEnabled(false);
+        btnUpdate.setEnabled(false);
+        btnClear.setEnabled(false);
+        txtName.setText("");
+        cboStatus.setSelectedIndex(0);
+    }//GEN-LAST:event_btnClearActionPerformed
 
     /**
      * @param args the command line arguments
@@ -286,6 +324,7 @@ public class CategoryManagement extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAdd;
     private javax.swing.JButton btnBack;
+    private javax.swing.JButton btnClear;
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnUpdate;
     private javax.swing.JComboBox<String> cboStatus;

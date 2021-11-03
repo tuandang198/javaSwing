@@ -8,19 +8,12 @@ package views;
 import dao.ManufacturerDAO;
 import utils.DbConnect;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
-import models.DanhMuc;
 import models.NhaSanXuat;
-import models.SanPham;
 
 /**
  *
@@ -37,9 +30,10 @@ public class ManufacturerManagement extends javax.swing.JFrame {
     public ManufacturerManagement() {
         initComponents();
         showNhaSanXuat();
-//        btnAdd.setEnabled(true);
-//        btnDelete.setEnabled(false);
-//        btnUpdate.setEnabled(false);
+        btnAdd.setEnabled(true);
+        btnDelete.setEnabled(false);
+        btnUpdate.setEnabled(false);
+        btnClear.setEnabled(false);
     }
 
     //get table data
@@ -88,6 +82,7 @@ public class ManufacturerManagement extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         cboStatus = new javax.swing.JComboBox<>();
         btnBack = new javax.swing.JButton();
+        btnClear = new javax.swing.JButton();
 
         jToggleButton1.setText("jToggleButton1");
 
@@ -153,41 +148,54 @@ public class ManufacturerManagement extends javax.swing.JFrame {
             }
         });
 
+        btnClear.setText("Clear");
+        btnClear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnClearActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                .addContainerGap())
-            .addGroup(layout.createSequentialGroup()
-                .addGap(122, 122, 122)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(35, 35, 35)
-                        .addComponent(btnUpdate, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGap(27, 27, 27)
-                        .addComponent(btnDelete)
-                        .addGap(72, 72, 72))
+                        .addContainerGap()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 489, Short.MAX_VALUE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(btnBack)
+                                .addGap(0, 0, Short.MAX_VALUE))))
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addGroup(layout.createSequentialGroup()
-                                    .addComponent(jLabel3)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(cboStatus, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                    .addComponent(jLabel1)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                        .addContainerGap(150, Short.MAX_VALUE))))
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(btnBack)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(122, 122, 122)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                                .addComponent(jLabel1)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                                .addComponent(jLabel3)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(cboStatus, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGap(25, 25, 25)
+                                        .addComponent(btnUpdate)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(btnClear)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(btnDelete))))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(63, 63, 63)
+                                .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -208,7 +216,8 @@ public class ManufacturerManagement extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnAdd)
                     .addComponent(btnUpdate)
-                    .addComponent(btnDelete))
+                    .addComponent(btnDelete)
+                    .addComponent(btnClear))
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 263, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -219,9 +228,10 @@ public class ManufacturerManagement extends javax.swing.JFrame {
 
     private void tblCategoryMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblCategoryMouseClicked
         // TODO add your handling code here:
-//        btnAdd.setEnabled(false);
-//        btnDelete.setEnabled(true);
-//        btnUpdate.setEnabled(true);
+        btnAdd.setEnabled(false);
+        btnDelete.setEnabled(true);
+        btnUpdate.setEnabled(true);
+        btnClear.setEnabled(true);
         DefaultTableModel categoryTable = (DefaultTableModel) tblCategory.getModel();
         int selectedRow = tblCategory.getSelectedRow();
         txtName.setText(categoryTable.getValueAt(selectedRow, 1).toString());
@@ -230,9 +240,13 @@ public class ManufacturerManagement extends javax.swing.JFrame {
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
         // TODO add your handling code here:
-
-        ManufacturerDAO.add(txtName.getText(), cboStatus.getSelectedIndex());
+        if(txtName.getText().trim().isEmpty()){
+            JOptionPane.showMessageDialog(null, "Please fill all blank space!");
+        }else{
+            ManufacturerDAO.add(txtName.getText(), cboStatus.getSelectedIndex());
         showNhaSanXuat();
+        }
+        
         
 
     }//GEN-LAST:event_btnAddActionPerformed
@@ -244,8 +258,12 @@ public class ManufacturerManagement extends javax.swing.JFrame {
         DefaultTableModel categoryTable = (DefaultTableModel) tblCategory.getModel();
         int selectedRow = tblCategory.getSelectedRow();
         int id = Integer.parseInt(categoryTable.getValueAt(selectedRow, 0).toString());
+        if(txtName.getText().trim().isEmpty()){
+            JOptionPane.showMessageDialog(null, "Please fill all blank space!");
+        }else{
         ManufacturerDAO.update(txtName.getText(), cboStatus.getSelectedIndex(), id);
         showNhaSanXuat();
+        }
         
 
     }//GEN-LAST:event_btnUpdateActionPerformed
@@ -275,6 +293,16 @@ public class ManufacturerManagement extends javax.swing.JFrame {
         // TODO add your handling code here:
         
     }//GEN-LAST:event_txtNameActionPerformed
+
+    private void btnClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearActionPerformed
+        // TODO add your handling code here:
+        btnAdd.setEnabled(true);
+        btnDelete.setEnabled(false);
+        btnUpdate.setEnabled(false);
+        btnClear.setEnabled(false);
+        txtName.setText("");
+        cboStatus.setSelectedIndex(0);
+    }//GEN-LAST:event_btnClearActionPerformed
 
     /**
      * @param args the command line arguments
@@ -315,6 +343,7 @@ public class ManufacturerManagement extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAdd;
     private javax.swing.JButton btnBack;
+    private javax.swing.JButton btnClear;
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnUpdate;
     private javax.swing.JComboBox<String> cboStatus;
