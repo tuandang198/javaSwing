@@ -105,4 +105,27 @@ public  class ManufacturerDAO {
             DbConnect.close(con, pstm, rs);
         }
     }
+     public static int findDuplicate(String name){
+        int temp =0;
+        
+        Connection con = DbConnect.open();
+        PreparedStatement stm = null;
+        ResultSet rs = null;
+        try {
+            con = DbConnect.open();
+
+            String sql = "select * from nha_san_xuat where ten_nha_san_xuat = ?";
+            stm = con.prepareStatement(sql);
+            stm.setString(1,name);
+            rs = stm.executeQuery();
+            if (rs.next()) {
+                temp=1;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ProductManagement.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            DbConnect.close(con, stm, rs);
+        }
+        return temp;
+    }
 }

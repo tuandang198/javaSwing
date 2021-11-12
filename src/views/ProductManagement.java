@@ -374,9 +374,13 @@ public class ProductManagement extends javax.swing.JFrame {
         if (txtName.getText().trim().isEmpty() || txtPrice.getText().trim().isEmpty() || txtQuantity.getText().trim().isEmpty() || jComboBox_Category.getSelectedIndex() == 0 || jComboBox_Manufacturer.getSelectedIndex() == 0) {
             JOptionPane.showMessageDialog(null, "Please fill all blank space!");
         } else {
-            ProductDAO.add(txtName.getText(), txtPrice.getText(), txtQuantity.getText(), jComboBox_Category.getSelectedIndex(), jComboBox_Manufacturer.getSelectedIndex());
-
+             if (ProductDAO.findDuplicate(txtName.getText()) == 0) {
+                ProductDAO.add(txtName.getText(), txtPrice.getText(), txtQuantity.getText(), jComboBox_Category.getSelectedIndex(), jComboBox_Manufacturer.getSelectedIndex());
             showSanPham();
+            } else {
+                JOptionPane.showMessageDialog(null, "Duplicate product!");
+            }
+            
         }
 
 
@@ -390,14 +394,23 @@ public class ProductManagement extends javax.swing.JFrame {
         if (txtName.getText().trim().isEmpty() || txtPrice.getText().trim().isEmpty() || txtQuantity.getText().trim().isEmpty() || jComboBox_Category.getSelectedIndex() == 0 || jComboBox_Manufacturer.getSelectedIndex() == 0) {
             JOptionPane.showMessageDialog(null, "Please fill all blank space!");
         } else {
+            
+            if (ProductDAO.findDuplicate(txtName.getText()) == 0 || txtName.getText().equals(productTable.getValueAt(selectedRow, 1).toString())) {
             ProductDAO.update(txtName.getText(), txtPrice.getText(), txtQuantity.getText(), jComboBox_Category.getSelectedIndex(), jComboBox_Manufacturer.getSelectedIndex(), id);
-
             showSanPham();
             txtName.setText("");
             txtPrice.setText("");
             txtQuantity.setText("");
             jComboBox_Category.setSelectedIndex(0);
             jComboBox_Manufacturer.setSelectedIndex(0);
+            updateBtn.setEnabled(false);
+            clearBtn.setEnabled(false);
+            deleteBtn.setEnabled(false);
+            addBtn.setEnabled(true);
+            } else {
+                JOptionPane.showMessageDialog(null, "Duplicate product!");
+            }
+            
         }
 
     }//GEN-LAST:event_updateBtnActionPerformed

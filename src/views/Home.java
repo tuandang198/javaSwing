@@ -75,6 +75,7 @@ public class Home extends javax.swing.JFrame {
         for (int i = 0; i < order.size(); i++) {
             OrderDAO.addOrderList(newOrderId, order.get(i).getTen(), order.get(i).getGiaTien(), order.get(i).getSoLuong());
         }
+        
     }
 
     /**
@@ -411,7 +412,7 @@ public class Home extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtQuantityActionPerformed
     SanPham selectedSp;
-
+    int allQty;
     private void tblHomeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblHomeMouseClicked
         // TODO add your handling code here:
         btnAdd.setEnabled(true);
@@ -420,6 +421,7 @@ public class Home extends javax.swing.JFrame {
         DefaultTableModel productTable = (DefaultTableModel) tblHome.getModel();
         int selectedRow = tblHome.getSelectedRow();
         selectedSp = list.get(selectedRow);
+        
         txtName.setText(productTable.getValueAt(selectedRow, 0).toString());
         txtPrice.setText(productTable.getValueAt(selectedRow, 1).toString());
         txtQuantity.setText("1");
@@ -433,6 +435,7 @@ public class Home extends javax.swing.JFrame {
         btnReset.setEnabled(true);
     }//GEN-LAST:event_tblOrderMouseClicked
     List<SanPham> order = new ArrayList<>();
+    
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
         // TODO add your handling code here:
         int soLuong = Integer.parseInt(txtQuantity.getText());
@@ -444,7 +447,7 @@ public class Home extends javax.swing.JFrame {
             selectedSp.setSoLuong(soLuong);
             order.add(selectedSp);
         }
-
+        
         sum = order.stream().map(a -> a.getGiaTien() * a.getSoLuong()).reduce((a, b) -> (a + b)).get();
         sumQty = order.stream().map(a -> a.getSoLuong()).reduce((a, b) -> (a + b)).get();
         txtTotalBill.setText(NumberUtils.formatNumber(sum));
@@ -458,7 +461,7 @@ public class Home extends javax.swing.JFrame {
             r.add(NumberUtils.formatNumber(sp.getGiaTien() * sp.getSoLuong()));
             model.addRow(r);
         }
-
+       
     }//GEN-LAST:event_btnAddActionPerformed
 
     private void txtTotalBillActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtTotalBillActionPerformed
@@ -478,8 +481,11 @@ public class Home extends javax.swing.JFrame {
         // TODO add your handling code here:
         java.sql.Date sqlDate = new java.sql.Date(d.getTime());
         int newOrderId = OrderDAO.addOrder(sum, sumQty, sqlDate);
+        System.out.println(sumQty);
         addOrderList(newOrderId);
-
+        for (int i = 0; i < order.size(); i++) {
+            ProductDAO.updateQty(order.get(i).getSoLuong(), order.get(i).getTen()); 
+        }
         txtTotalBill.setText("");
         txtName.setText("");
         txtPrice.setText("");
@@ -506,9 +512,10 @@ public class Home extends javax.swing.JFrame {
         // TODO add your handling code here:
         DefaultTableModel table = (DefaultTableModel) tblHome.getModel();
         String search = txtSearch.getText().toLowerCase();
-        TableRowSorter<DefaultTableModel> tr = new TableRowSorter<DefaultTableModel>(table);
+        TableRowSorter<DefaultTableModel> tr = new TableRowSorter<>(table);
         tblHome.setRowSorter(tr);
         tr.setRowFilter(RowFilter.regexFilter(search));
+        showSanPhamHome();
     }//GEN-LAST:event_txtSearchKeyReleased
 
     private void btnResetMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnResetMouseClicked

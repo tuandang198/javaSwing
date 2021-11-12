@@ -42,7 +42,7 @@ public class ManufacturerManagement extends javax.swing.JFrame {
     public void showNhaSanXuat() {
         
         List<NhaSanXuat> list = ManufacturerDAO.manufacturerList();
-        DefaultTableModel model = (DefaultTableModel) tblCategory.getModel();
+        DefaultTableModel model = (DefaultTableModel) tblManufacturer.getModel();
         model.setRowCount(0);
         Object[] row = new Object[3];
         for (int i = 0; i < list.size(); i++) {
@@ -77,7 +77,7 @@ public class ManufacturerManagement extends javax.swing.JFrame {
         btnUpdate = new javax.swing.JButton();
         btnDelete = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        tblCategory = new javax.swing.JTable();
+        tblManufacturer = new javax.swing.JTable();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         cboStatus = new javax.swing.JComboBox<>();
@@ -120,7 +120,7 @@ public class ManufacturerManagement extends javax.swing.JFrame {
             }
         });
 
-        tblCategory.setModel(new javax.swing.table.DefaultTableModel(
+        tblManufacturer.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -128,12 +128,12 @@ public class ManufacturerManagement extends javax.swing.JFrame {
                 "ManufacturerID", "Name", "Status"
             }
         ));
-        tblCategory.addMouseListener(new java.awt.event.MouseAdapter() {
+        tblManufacturer.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                tblCategoryMouseClicked(evt);
+                tblManufacturerMouseClicked(evt);
             }
         });
-        jScrollPane1.setViewportView(tblCategory);
+        jScrollPane1.setViewportView(tblManufacturer);
 
         jLabel2.setText("Manufacturer Management");
 
@@ -226,25 +226,30 @@ public class ManufacturerManagement extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void tblCategoryMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblCategoryMouseClicked
+    private void tblManufacturerMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblManufacturerMouseClicked
         // TODO add your handling code here:
         btnAdd.setEnabled(false);
         btnDelete.setEnabled(true);
         btnUpdate.setEnabled(true);
         btnClear.setEnabled(true);
-        DefaultTableModel categoryTable = (DefaultTableModel) tblCategory.getModel();
-        int selectedRow = tblCategory.getSelectedRow();
+        DefaultTableModel categoryTable = (DefaultTableModel) tblManufacturer.getModel();
+        int selectedRow = tblManufacturer.getSelectedRow();
         txtName.setText(categoryTable.getValueAt(selectedRow, 1).toString());
         cboStatus.setSelectedItem(categoryTable.getValueAt(selectedRow, 2).toString());
-    }//GEN-LAST:event_tblCategoryMouseClicked
+    }//GEN-LAST:event_tblManufacturerMouseClicked
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
         // TODO add your handling code here:
         if(txtName.getText().trim().isEmpty()){
             JOptionPane.showMessageDialog(null, "Please fill all blank space!");
         }else{
-            ManufacturerDAO.add(txtName.getText(), cboStatus.getSelectedIndex());
-        showNhaSanXuat();
+            if (ManufacturerDAO.findDuplicate(txtName.getText()) == 0) {
+                ManufacturerDAO.add(txtName.getText(), cboStatus.getSelectedIndex());
+                showNhaSanXuat();
+            } else {
+                JOptionPane.showMessageDialog(null, "Duplicate manufacturer!");
+            }
+            
         }
         
         
@@ -255,14 +260,19 @@ public class ManufacturerManagement extends javax.swing.JFrame {
         // TODO add your handling code here:
         Connection con = DbConnect.open();
         PreparedStatement stm = null;
-        DefaultTableModel categoryTable = (DefaultTableModel) tblCategory.getModel();
-        int selectedRow = tblCategory.getSelectedRow();
-        int id = Integer.parseInt(categoryTable.getValueAt(selectedRow, 0).toString());
+        DefaultTableModel manufacturerTable = (DefaultTableModel) tblManufacturer.getModel();
+        int selectedRow = tblManufacturer.getSelectedRow();
+        int id = Integer.parseInt(manufacturerTable.getValueAt(selectedRow, 0).toString());
         if(txtName.getText().trim().isEmpty()){
             JOptionPane.showMessageDialog(null, "Please fill all blank space!");
         }else{
-        ManufacturerDAO.update(txtName.getText(), cboStatus.getSelectedIndex(), id);
-        showNhaSanXuat();
+        
+        if (ManufacturerDAO.findDuplicate(txtName.getText()) == 0 || txtName.getText().equals(manufacturerTable.getValueAt(selectedRow, 1).toString())) {
+                ManufacturerDAO.update(txtName.getText(), cboStatus.getSelectedIndex(), id);
+                showNhaSanXuat();
+            } else {
+                JOptionPane.showMessageDialog(null, "Duplicate manufacturer!");
+            }
         }
         
 
@@ -271,8 +281,8 @@ public class ManufacturerManagement extends javax.swing.JFrame {
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
         // TODO add your handling code here:
         
-        DefaultTableModel categoryTable = (DefaultTableModel) tblCategory.getModel();
-        int selectedRow = tblCategory.getSelectedRow();
+        DefaultTableModel categoryTable = (DefaultTableModel) tblManufacturer.getModel();
+        int selectedRow = tblManufacturer.getSelectedRow();
         int id = Integer.parseInt(categoryTable.getValueAt(selectedRow, 0).toString());
         ManufacturerDAO.delete(id);
         txtName.setText("");
@@ -353,7 +363,7 @@ public class ManufacturerManagement extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JToggleButton jToggleButton1;
-    private javax.swing.JTable tblCategory;
+    private javax.swing.JTable tblManufacturer;
     private javax.swing.JTextField txtName;
     // End of variables declaration//GEN-END:variables
 }

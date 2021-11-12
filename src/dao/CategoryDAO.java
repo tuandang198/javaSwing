@@ -45,6 +45,29 @@ public class CategoryDAO {
         }
         return categoryList;
     }
+    public static int findDuplicate(String name){
+        int temp =0;
+        List<DanhMuc> categoryList = new ArrayList<>();
+        Connection con = DbConnect.open();
+        PreparedStatement stm = null;
+        ResultSet rs = null;
+        try {
+            con = DbConnect.open();
+
+            String sql = "select * from danh_muc where ten = ?";
+            stm = con.prepareStatement(sql);
+            stm.setString(1,name);
+            rs = stm.executeQuery();
+            if (rs.next()) {
+                temp=1;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ProductManagement.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            DbConnect.close(con, stm, rs);
+        }
+        return temp;
+    }
     public static void add(String name, int status) {
         Connection con = DbConnect.open();
         PreparedStatement pstm = null;
