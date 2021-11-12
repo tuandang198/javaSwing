@@ -69,6 +69,25 @@ public class ProductDAO {
             DbConnect.close(con, pstm, null);
         }
     }
+    public static void updateQty(int qty, String name) {
+        Connection con = DbConnect.open();
+        PreparedStatement pstm = null;
+
+        try {
+
+            String sql = "UPDATE `san_pham` SET `so_luong`= ? WHERE `ten`=?";
+            pstm = con.prepareStatement(sql);
+            
+            pstm.setInt(1, qty);
+            pstm.setString(2, name);
+
+            pstm.executeUpdate();
+        } catch (SQLException ex) {
+            System.out.println("Loi: " + ex.getMessage());
+        } finally {
+            DbConnect.close(con, pstm, null);
+        }
+    }
 
     public static void add(String name, String price, String quantity, int category, int manufacturer) {
         Connection con = DbConnect.open();
@@ -106,6 +125,29 @@ public class ProductDAO {
         } finally {
             DbConnect.close(con, pstm, null);
         }
+    }
+    public static int findDuplicate(String name){
+        int temp =0;
+        
+        Connection con = DbConnect.open();
+        PreparedStatement stm = null;
+        ResultSet rs = null;
+        try {
+            con = DbConnect.open();
+
+            String sql = "select * from san_pham where ten = ?";
+            stm = con.prepareStatement(sql);
+            stm.setString(1,name);
+            rs = stm.executeQuery();
+            if (rs.next()) {
+                temp=1;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ProductManagement.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            DbConnect.close(con, stm, rs);
+        }
+        return temp;
     }
 
 //    public static SanPham findProduct(String name) {

@@ -41,7 +41,7 @@ public class CategoryManagement extends javax.swing.JFrame {
         btnDelete.setEnabled(false);
         btnUpdate.setEnabled(false);
         btnClear.setEnabled(false);
-        
+
     }
 
     //show table data
@@ -226,7 +226,7 @@ public class CategoryManagement extends javax.swing.JFrame {
         btnDelete.setEnabled(true);
         btnUpdate.setEnabled(true);
         btnClear.setEnabled(true);
-        
+
         DefaultTableModel categoryTable = (DefaultTableModel) tblCategory.getModel();
         int selectedRow = tblCategory.getSelectedRow();
         txtName.setText(categoryTable.getValueAt(selectedRow, 1).toString());
@@ -235,11 +235,17 @@ public class CategoryManagement extends javax.swing.JFrame {
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
         // TODO add your handling code here:
-        if(txtName.getText().trim().isEmpty()){
+        if (txtName.getText().trim().isEmpty()) {
             JOptionPane.showMessageDialog(null, "Please fill all blank space!");
-        }else{
-        CategoryDAO.add(txtName.getText(), cboStatus.getSelectedIndex());
-        showDanhMuc();
+        } else {
+            if (CategoryDAO.findDuplicate(txtName.getText()) == 0) {
+                CategoryDAO.add(txtName.getText(), cboStatus.getSelectedIndex());
+                showDanhMuc();
+            } else {
+                JOptionPane.showMessageDialog(null, "Duplicate category!");
+
+            }
+
         }
     }//GEN-LAST:event_btnAddActionPerformed
 
@@ -248,11 +254,16 @@ public class CategoryManagement extends javax.swing.JFrame {
         DefaultTableModel categoryTable = (DefaultTableModel) tblCategory.getModel();
         int selectedRow = tblCategory.getSelectedRow();
         int id = Integer.parseInt(categoryTable.getValueAt(selectedRow, 0).toString());
-        if(txtName.getText().trim().isEmpty()){
+        if (txtName.getText().trim().isEmpty()) {
             JOptionPane.showMessageDialog(null, "Please fill all blank space!");
-        }else{
-        CategoryDAO.update(txtName.getText(), cboStatus.getSelectedIndex(), id);
-        showDanhMuc();
+        } else {
+            if (CategoryDAO.findDuplicate(txtName.getText()) == 0 || txtName.getText().equals(categoryTable.getValueAt(selectedRow, 1).toString())) {
+                CategoryDAO.update(txtName.getText(), cboStatus.getSelectedIndex(), id);
+                showDanhMuc();
+            } else {
+                JOptionPane.showMessageDialog(null, "Duplicate category!");
+            }
+
         }
 
 
